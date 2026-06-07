@@ -1,0 +1,2206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Cyberpunk Academy - Misiones</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        deepBlack: '#050505',
+                        darkBg: '#0a0a12',
+                        neonBlue: '#0055ff',
+                        neonPurple: '#bc13fe',
+                        neonCyan: '#00e5ff',
+                        neonRed: '#ff2a2a',
+                        neonGreen: '#00ff66',
+                        glassBg: 'rgba(10, 10, 20, 0.65)'
+                    },
+                    fontFamily: {
+                        cyber: ['Orbitron', 'sans-serif'],
+                        hud: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            color: #f8fafc;
+            background:
+                radial-gradient(circle at 20% 10%, rgba(0, 229, 255, 0.16), transparent 26%),
+                radial-gradient(circle at 80% 0%, rgba(188, 19, 254, 0.14), transparent 30%),
+                linear-gradient(135deg, #030305 0%, #090914 55%, #050507 100%);
+            overflow-x: hidden;
+            transition: opacity 0.5s ease;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0, 229, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.07) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), transparent 85%);
+            z-index: 0;
+        }
+
+        #particles-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .screen {
+            position: relative;
+            z-index: 2;
+            display: none;
+            min-height: 100vh;
+            padding: 24px;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        .glass-panel {
+            background: rgba(10, 10, 20, 0.72);
+            border: 1px solid rgba(148, 163, 184, 0.26);
+            box-shadow: 0 20px 70px rgba(0, 0, 0, 0.44), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(14px);
+        }
+
+        .cyber-input {
+            color: #fff;
+            background: rgba(5, 5, 10, 0.86);
+            border: 1px solid rgba(0, 229, 255, 0.36);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cyber-input:focus {
+            border-color: #00e5ff;
+            box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.13), 0 0 18px rgba(0, 229, 255, 0.22);
+        }
+
+        .cyber-input option {
+            background: #0a0a12;
+            color: #fff;
+        }
+
+        .cyber-btn,
+        .cyber-btn-purple {
+            border: 1px solid #00e5ff;
+            color: #00e5ff;
+            background: rgba(0, 229, 255, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+        }
+
+        .cyber-btn-purple {
+            border-color: #bc13fe;
+            color: #f5d0fe;
+            background: rgba(188, 19, 254, 0.16);
+        }
+
+        .cyber-btn:hover:not(:disabled),
+        .cyber-btn-purple:hover:not(:disabled) {
+            transform: translateY(-1px);
+            color: #050505;
+            background: #00e5ff;
+            box-shadow: 0 0 18px rgba(0, 229, 255, 0.55);
+        }
+
+        .cyber-btn-purple:hover:not(:disabled) {
+            color: #fff;
+            background: #bc13fe;
+            box-shadow: 0 0 18px rgba(188, 19, 254, 0.55);
+        }
+
+        .cyber-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+        }
+
+        .ambient-toggle {
+            position: fixed;
+            right: 18px;
+            bottom: 18px;
+            z-index: 40;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 10px 14px;
+            border: 1px solid rgba(0, 229, 255, 0.55);
+            border-radius: 999px;
+            color: #00e5ff;
+            background: rgba(5, 5, 10, 0.84);
+            box-shadow: 0 0 18px rgba(0, 229, 255, 0.22);
+            backdrop-filter: blur(12px);
+        }
+
+        .ambient-toggle.active {
+            border-color: rgba(0, 255, 102, 0.75);
+            color: #00ff66;
+            box-shadow: 0 0 22px rgba(0, 255, 102, 0.28);
+        }
+
+        .ambient-toggle i {
+            width: 16px;
+            text-align: center;
+        }
+
+        .neon-border-cyan {
+            border-color: rgba(0, 229, 255, 0.55);
+        }
+
+        .neon-border-purple {
+            border-color: rgba(188, 19, 254, 0.55);
+        }
+
+        .neon-text-cyan {
+            color: #00e5ff;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.75);
+        }
+
+        .holo-bar {
+            height: 10px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+        }
+
+        .holo-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #0055ff, #00e5ff, #00ff66);
+            box-shadow: 0 0 18px rgba(0, 229, 255, 0.7);
+            transition: width 0.35s ease;
+        }
+
+        .manga-panel {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 18px 18px, rgba(255, 255, 255, 0.12) 2px, transparent 3px) 0 0 / 28px 28px,
+                linear-gradient(135deg, rgba(255, 255, 255, 0.09), rgba(0, 229, 255, 0.04) 45%, rgba(188, 19, 254, 0.08));
+            border: 2px solid rgba(255, 255, 255, 0.86);
+            box-shadow: 8px 8px 0 rgba(0, 229, 255, 0.45), 16px 16px 0 rgba(188, 19, 254, 0.22);
+        }
+
+        .manga-bubble {
+            position: relative;
+            color: #0a0a12;
+            background: rgba(255, 255, 255, 0.94);
+            border: 2px solid #0a0a12;
+            box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.45);
+        }
+
+        .manga-bubble::after {
+            content: "";
+            position: absolute;
+            left: 34px;
+            bottom: -14px;
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.94);
+            border-right: 2px solid #0a0a12;
+            border-bottom: 2px solid #0a0a12;
+            transform: rotate(45deg);
+        }
+
+        .emp-fill {
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #ff2a2a, #ffcc00, #00ff66, #00e5ff);
+            box-shadow: 0 0 18px rgba(0, 229, 255, 0.65);
+            transition: width 1s ease;
+        }
+
+        #custom-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.72);
+            backdrop-filter: blur(10px);
+        }
+
+        #custom-modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from {
+                transform: translateY(8px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes flashGreen {
+            0%, 100% { box-shadow: 0 0 0 rgba(0, 255, 102, 0); }
+            50% { box-shadow: 0 0 24px rgba(0, 255, 102, 0.75); }
+        }
+
+        @keyframes flashRed {
+            0%, 100% { box-shadow: 0 0 0 rgba(255, 42, 42, 0); }
+            50% { box-shadow: 0 0 24px rgba(255, 42, 42, 0.75); }
+        }
+
+        .flash-green {
+            animation: flashGreen 0.55s ease;
+        }
+
+        .flash-red {
+            animation: flashRed 0.55s ease;
+        }
+
+        .matching-choice.selected {
+            border-color: #00e5ff;
+            color: #00e5ff;
+            background: rgba(0, 229, 255, 0.14);
+            box-shadow: 0 0 14px rgba(0, 229, 255, 0.3);
+        }
+
+        .matching-choice.matched {
+            border-color: #00ff66;
+            color: #00ff66;
+            background: rgba(0, 255, 102, 0.13);
+            opacity: 0.78;
+        }
+    </style>
+</head>
+<body class="font-hud antialiased selection:bg-neonPurple selection:text-white">
+    <canvas id="particles-canvas"></canvas>
+
+    <button id="ambient-toggle" class="ambient-toggle font-cyber text-[11px] tracking-wider" type="button" aria-pressed="false" title="Activar o desactivar sonido ambiente">
+        <i class="fas fa-volume-xmark"></i>
+        <span>AMBIENTE OFF</span>
+    </button>
+
+    <div id="custom-modal-overlay">
+        <div class="glass-panel p-6 max-w-md w-full text-center border-t-4 border-t-neonRed rounded-lg">
+            <i class="fas fa-exclamation-triangle text-4xl text-neonRed mb-4"></i>
+            <h2 id="modal-title" class="font-cyber text-xl mb-2 text-white">ATENCION</h2>
+            <p id="modal-message" class="text-gray-300 mb-6 text-sm"></p>
+            <div class="flex justify-center gap-4" id="modal-buttons"></div>
+        </div>
+    </div>
+
+    <section id="login-screen" class="screen active justify-center items-center">
+        <div class="glass-panel w-full max-w-lg p-8 rounded-lg relative">
+            <div class="absolute -top-4 -left-4 w-8 h-8 border-t-2 border-l-2 border-neonCyan"></div>
+            <div class="absolute -bottom-4 -right-4 w-8 h-8 border-b-2 border-r-2 border-neonPurple"></div>
+
+            <div class="text-center mb-8">
+                <i class="fas fa-calculator text-5xl text-neonCyan mb-3 drop-shadow-[0_0_10px_rgba(0,229,255,0.8)]"></i>
+                <h1 class="font-cyber text-3xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-neonCyan to-neonPurple">MATH.INIT</h1>
+                <p class="text-sm text-gray-400 mt-2 font-mono">ACADEMIA DE RETOS MATEMATICOS v2.0</p>
+            </div>
+
+            <form id="login-form" class="space-y-5">
+                <div>
+                    <label class="block text-xs font-cyber text-neonCyan mb-1 tracking-wider">IDENTIFICACION DE OPERADOR (Nombres y Apellidos)</label>
+                    <div class="relative">
+                        <input type="text" id="input-name" class="cyber-input w-full p-3 pl-10 rounded text-sm" placeholder="Ej: Ada Lovelace" autocomplete="off">
+                        <i class="fas fa-user absolute left-3 top-3.5 text-gray-400"></i>
+                        <i id="check-name" class="fas fa-check-circle absolute right-3 top-3.5 text-neonGreen hidden"></i>
+                    </div>
+                    <p id="err-name" class="text-red-500 text-xs mt-1 hidden">Solo letras, maximo 3 espacios.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-cyber text-neonCyan mb-1 tracking-wider">ANIMAL DEL ESCUADRON DE PILOTOS</label>
+                    <div class="relative">
+                        <select id="input-animal" class="cyber-input w-full p-3 pl-10 rounded text-sm cursor-pointer">
+                            <option value="">Seleccione el simbolo del Team...</option>
+                            <option value="Leon">Leon</option>
+                            <option value="Tigre">Tigre</option>
+                            <option value="Aguila">Aguila</option>
+                            <option value="Delfin">Delfin</option>
+                            <option value="Gato">Gato</option>
+                            <option value="Perro">Perro</option>
+                            <option value="Conejo">Conejo</option>
+                        </select>
+                        <i class="fas fa-paw absolute left-3 top-3.5 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-cyber text-neonCyan mb-1 tracking-wider">CODIGO DEL SALON</label>
+                    <div class="relative">
+                        <input type="text" id="input-squad" class="cyber-input w-full p-3 pl-10 rounded text-sm uppercase" placeholder="Ej: 5A2026" autocomplete="off" maxlength="10">
+                        <i class="fas fa-users absolute left-3 top-3.5 text-gray-400"></i>
+                        <i id="check-squad" class="fas fa-check-circle absolute right-3 top-3.5 text-neonGreen hidden"></i>
+                    </div>
+                    <p id="err-squad" class="text-red-500 text-xs mt-1 hidden">Hasta 10 caracteres alfanumericos: numeros del grado y letra mayuscula.</p>
+                </div>
+
+                <button type="submit" id="btn-login" class="cyber-btn w-full py-4 mt-6 font-cyber font-bold rounded flex items-center justify-center gap-2" disabled>
+                    <i class="fas fa-power-off"></i> INICIAR MISION
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <section id="intro-screen" class="screen justify-center items-center">
+        <div class="w-full max-w-5xl manga-panel rounded-lg p-6 md:p-8">
+            <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-6 items-stretch">
+                <div class="manga-bubble rounded-lg p-5 md:p-7">
+                    <p class="font-cyber text-xs tracking-widest text-gray-700 mb-2">TRANSMISION DEL COMANDO ESPACIAL</p>
+                    <h1 id="intro-greeting" class="font-cyber text-2xl md:text-4xl leading-tight text-black">Genio, te estabamos esperando.</h1>
+                    <p id="intro-copy" class="mt-4 text-lg md:text-xl font-bold leading-relaxed text-gray-900">
+                        Un comando de naves extraterrestres se acerca a la Tierra. Solo un genio matematico puede descifrar los retos y cargar el canon de pulso electromagnetico.
+                    </p>
+                </div>
+
+                <div class="glass-panel rounded-lg p-5 border-white/70 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between gap-3 mb-5">
+                            <span class="text-xs font-cyber text-neonCyan tracking-wider">ESCUADRON ASIGNADO</span>
+                            <i class="fas fa-rocket text-3xl text-neonPurple"></i>
+                        </div>
+                        <h2 id="intro-team" class="font-cyber text-3xl text-white mb-3">TEAM ANIMAL</h2>
+                        <p class="text-gray-300 leading-relaxed">
+                            Tus respuestas correctas llenaran la energia del canon EMP. Solo con el 100% de energia el pulso podra lanzarse y la amenaza alien sera derrotada.
+                        </p>
+                    </div>
+                    <div class="mt-6">
+                        <div class="holo-bar mb-3">
+                            <div class="holo-fill" style="width: 12%;"></div>
+                        </div>
+                        <button onclick="proceedFromIntro()" class="cyber-btn w-full py-4 rounded font-cyber font-bold">
+                            <i class="fas fa-satellite-dish"></i> ACEPTAR MISION
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="dashboard-screen" class="screen flex-col">
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 glass-panel p-4 rounded-lg neon-border-cyan">
+            <div class="flex items-center gap-4 mb-4 md:mb-0">
+                <div class="w-12 h-12 rounded-full border-2 border-neonCyan flex items-center justify-center bg-darkBg relative overflow-hidden">
+                    <i class="fas fa-user-astronaut text-neonCyan z-10"></i>
+                    <div class="absolute w-full h-[2px] bg-neonCyan opacity-50 top-1/2 animate-[spin_2s_linear_infinite]"></div>
+                </div>
+                <div>
+                    <h2 id="hud-name" class="font-cyber font-bold text-lg neon-text-cyan tracking-wider">OPERADOR</h2>
+                    <p class="text-xs text-gray-400 font-mono">TEAM: <span id="hud-team" class="text-neonPurple font-bold"></span> | SALON: <span id="hud-squad" class="text-neonCyan font-bold"></span> | RANGO: <span id="hud-rank" class="text-white">NOVATO</span></p>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-center gap-4 md:gap-6">
+                <div class="text-center">
+                    <p class="text-[10px] text-gray-400 font-cyber">ENERGIA ACUMULADA</p>
+                    <p class="text-2xl font-bold font-mono text-neonGreen"><i class="fas fa-bolt text-sm"></i> <span id="hud-xp">0</span> XP</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="goToResults()" class="cyber-btn-purple p-2 rounded text-sm px-4" id="btn-ver-informe" style="display:none;">
+                        <i class="fas fa-file-pdf"></i> INFORME
+                    </button>
+                    <button onclick="confirmProgressReset()" class="cyber-btn-purple p-2 rounded text-sm px-4 border-yellow-500 text-yellow-300 hover:bg-yellow-500 hover:text-black">
+                        <i class="fas fa-eraser"></i> PROGRESO 0
+                    </button>
+                    <button onclick="confirmReset()" class="cyber-btn p-2 rounded text-sm border-red-500 text-red-500 hover:bg-red-500 hover:text-white hover:shadow-[0_0_10px_#ff0000]">
+                        <i class="fas fa-redo"></i> REINICIAR
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="text-center mb-6">
+            <h2 class="font-cyber text-2xl text-white tracking-widest"><i class="fas fa-satellite"></i> PANEL DE DEFENSA MATEMATICA</h2>
+            <p class="text-gray-400 text-sm mt-1">Descifra los retos para cargar el canon EMP y proteger la Tierra de la amenaza alien.</p>
+        </div>
+
+        <div id="missions-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto w-full"></div>
+    </section>
+
+    <section id="mission-screen" class="screen items-center">
+        <div class="w-full max-w-4xl glass-panel p-6 md:p-8 rounded-xl neon-border-purple flex flex-col min-h-[82vh] relative mx-auto">
+            <div class="flex justify-between items-center gap-4 mb-6 border-b border-gray-700 pb-4">
+                <div>
+                    <span id="active-mission-topic" class="text-xs bg-neonPurple text-white px-2 py-1 rounded font-cyber tracking-widest">TOPIC</span>
+                    <h2 id="active-mission-title" class="text-xl font-bold mt-2 font-cyber text-neonCyan">Titulo Mision</h2>
+                </div>
+                <div class="text-right flex flex-col items-end">
+                    <div class="flex items-center gap-2 text-neonRed font-mono text-xl mb-1 bg-darkBg px-3 py-1 rounded border border-red-900">
+                        <i class="fas fa-clock animate-pulse"></i> <span id="mission-timer">00:00</span>
+                    </div>
+                    <span class="text-xs text-gray-400">Progreso: <span id="mission-progress-text">1/5</span></span>
+                </div>
+            </div>
+
+            <div class="holo-bar mb-8">
+                <div id="mission-progress-bar" class="holo-fill" style="width: 0%;"></div>
+            </div>
+
+            <div id="question-container" class="flex-grow flex flex-col justify-center">
+                <div class="mb-6 relative">
+                    <i class="fas fa-terminal absolute -left-6 top-1 text-gray-600 text-sm hidden md:block"></i>
+                    <h3 id="question-text" class="text-lg md:text-2xl font-medium leading-relaxed">Cargando datos de simulacion...</h3>
+                </div>
+
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"></div>
+
+                <div id="question-feedback" class="mt-6 text-center opacity-0 transition-opacity duration-300 font-cyber font-bold text-lg min-h-8"></div>
+            </div>
+
+            <div class="mt-8 flex justify-between items-center border-t border-gray-700 pt-4">
+                <button onclick="abortMission()" class="text-gray-400 hover:text-white transition-colors text-sm font-cyber uppercase">
+                    <i class="fas fa-times-circle"></i> Abortar
+                </button>
+                <div class="text-xs text-gray-500 font-mono">ID de Instancia: <span id="instance-id"></span></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="results-screen" class="screen justify-center items-center">
+        <div class="glass-panel max-w-3xl w-full p-8 rounded-xl text-center relative overflow-hidden">
+            <i class="fas fa-award absolute -right-10 -top-10 text-[15rem] text-white opacity-5"></i>
+
+            <h1 class="font-cyber text-4xl mb-2 text-neonCyan">ENERGIA EMP CALCULADA</h1>
+            <p class="text-gray-400 mb-8">El porcentaje de respuestas correctas carga el canon de pulso electromagnetico</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 relative z-10">
+                <div class="flex flex-col items-center justify-center bg-darkBg p-6 rounded-lg border border-gray-800">
+                    <div class="relative w-32 h-32 flex items-center justify-center rounded-full border-4 border-gray-700 mb-4 shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                        <svg class="absolute top-0 left-0 w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="56" fill="transparent" stroke="rgba(255,255,255,0.1)" stroke-width="8"></circle>
+                            <circle id="score-circle" cx="60" cy="60" r="56" fill="transparent" stroke="#00e5ff" stroke-width="8" stroke-dasharray="351.8" stroke-dashoffset="351.8" style="transition: stroke-dashoffset 1.5s ease-out;"></circle>
+                        </svg>
+                        <div class="text-center">
+                            <span id="final-score-percent" class="text-3xl font-bold font-mono">0%</span>
+                        </div>
+                    </div>
+                    <div id="final-classification" class="font-cyber text-xl tracking-widest text-white">CALCULANDO...</div>
+                </div>
+
+                <div class="text-left flex flex-col justify-center space-y-4">
+                    <div class="bg-darkBg p-3 rounded border-l-4 border-neonPurple">
+                        <p class="text-xs text-gray-400 font-cyber">PUNTAJE TOTAL XP</p>
+                        <p class="text-xl font-mono"><span id="final-xp" class="text-neonPurple font-bold">0</span> / <span id="max-xp">0</span></p>
+                    </div>
+                    <div class="bg-darkBg p-3 rounded border-l-4 border-neonCyan">
+                        <p class="text-xs text-gray-400 font-cyber">TIEMPO TOTAL</p>
+                        <p class="text-xl font-mono text-neonCyan" id="final-time">00:00</p>
+                    </div>
+                    <div class="bg-darkBg p-3 rounded border-l-4 border-neonGreen">
+                        <p class="text-xs text-gray-400 font-cyber">MISIONES COMPLETADAS</p>
+                        <p class="text-xl font-mono text-neonGreen" id="final-missions-count">0/0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative z-10 mb-8 bg-darkBg p-4 rounded-lg border border-neonCyan/60 text-left">
+                <div class="flex justify-between items-center gap-3 mb-2">
+                    <p class="text-xs text-neonCyan font-cyber tracking-wider">CANON DE PULSO ELECTROMAGNETICO</p>
+                    <span id="emp-energy-label" class="font-cyber text-neonGreen">0%</span>
+                </div>
+                <div class="holo-bar h-4 mb-3">
+                    <div id="emp-energy-fill" class="emp-fill" style="width: 0%;"></div>
+                </div>
+                <p id="emp-status-message" class="text-sm md:text-base text-gray-200 leading-relaxed">
+                    Calculando energia del canon...
+                </p>
+            </div>
+
+            <div class="relative z-10 mb-8 text-left bg-darkBg p-4 rounded-lg border border-neonPurple/60 shadow-[0_0_18px_rgba(188,19,254,0.14)]">
+                <p class="text-xs text-neonPurple font-cyber tracking-wider mb-1">ESPIRITU DEL ANIMAL</p>
+                <p id="final-animal-message" class="text-base md:text-lg text-gray-100 leading-relaxed">Calculando mensaje motivacional...</p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4 relative z-10">
+                <button onclick="showScreen('dashboard-screen')" class="cyber-btn px-6 py-3 rounded font-bold">
+                    <i class="fas fa-arrow-left"></i> VOLVER AL PANEL
+                </button>
+                <button onclick="generatePDF()" class="cyber-btn bg-neonPurple text-white border-neonPurple px-6 py-3 rounded font-bold hover:shadow-[0_0_20px_#bc13fe]">
+                    <i class="fas fa-file-pdf"></i> GENERAR PDF
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        let audioCtx;
+        const ambientState = {
+            enabled: localStorage.getItem('mathCyberAmbientEnabled') === 'true',
+            running: false,
+            starting: false,
+            masterGain: null,
+            nodes: [],
+            interval: null
+        };
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (AudioContextClass) audioCtx = new AudioContextClass();
+            }
+            return audioCtx;
+        }
+
+        function playSynthSound(type) {
+            const ctx = getAudioContext();
+            if (!ctx) return;
+            if (ctx.state === 'suspended') ctx.resume();
+
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            if (type === 'hover') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1);
+            } else if (type === 'success') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, ctx.currentTime);
+                osc.frequency.setValueAtTime(600, ctx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(1000, ctx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.5);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.3);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.3);
+            }
+        }
+
+        function setupAmbientToggle() {
+            const toggle = document.getElementById('ambient-toggle');
+            if (!toggle) return;
+
+            toggle.addEventListener('click', async () => {
+                ambientState.enabled = !ambientState.enabled;
+                localStorage.setItem('mathCyberAmbientEnabled', String(ambientState.enabled));
+
+                if (ambientState.enabled) {
+                    await startAmbientSound();
+                } else {
+                    stopAmbientSound();
+                }
+
+                updateAmbientToggle();
+            });
+
+            updateAmbientToggle();
+
+            document.addEventListener('pointerdown', async () => {
+                if (ambientState.enabled && !ambientState.running) {
+                    await startAmbientSound();
+                    updateAmbientToggle();
+                }
+            }, { once: true });
+        }
+
+        function updateAmbientToggle() {
+            const toggle = document.getElementById('ambient-toggle');
+            if (!toggle) return;
+
+            toggle.classList.toggle('active', ambientState.enabled && ambientState.running);
+            toggle.setAttribute('aria-pressed', String(ambientState.enabled && ambientState.running));
+
+            const icon = toggle.querySelector('i');
+            const label = toggle.querySelector('span');
+            if (ambientState.enabled && ambientState.running) {
+                icon.className = 'fas fa-music';
+                label.textContent = 'MUSICA ON';
+            } else if (ambientState.enabled) {
+                icon.className = 'fas fa-music';
+                label.textContent = 'MUSICA LISTA';
+            } else {
+                icon.className = 'fas fa-volume-xmark';
+                label.textContent = 'MUSICA OFF';
+            }
+        }
+
+        async function unlockAudioContext(ctx) {
+            if (ctx && ctx.state === 'suspended') {
+                await ctx.resume();
+            }
+        }
+
+        function midiToFrequency(note) {
+            return 440 * Math.pow(2, (note - 69) / 12);
+        }
+
+        function scheduleTone(ctx, destination, note, startTime, duration, options = {}) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+            const volume = options.volume || 0.05;
+            const attack = options.attack || 0.015;
+            const release = options.release || 0.08;
+
+            osc.type = options.type || 'triangle';
+            osc.frequency.setValueAtTime(midiToFrequency(note), startTime);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(options.cutoff || 1450, startTime);
+            filter.Q.value = options.q || 0.7;
+
+            gain.gain.setValueAtTime(0.0001, startTime);
+            gain.gain.exponentialRampToValueAtTime(volume, startTime + attack);
+            gain.gain.setValueAtTime(volume, startTime + Math.max(attack, duration - release));
+            gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(destination);
+            osc.start(startTime);
+            osc.stop(startTime + duration + 0.02);
+        }
+
+        async function startAmbientSound() {
+            const ctx = getAudioContext();
+            if (!ctx || ambientState.running || ambientState.starting) return;
+
+            ambientState.starting = true;
+            await unlockAudioContext(ctx);
+
+            if (!ambientState.enabled) {
+                ambientState.starting = false;
+                return;
+            }
+
+            const masterGain = ctx.createGain();
+            const toneFilter = ctx.createBiquadFilter();
+            const delay = ctx.createDelay(1.2);
+            const feedback = ctx.createGain();
+            const delayGain = ctx.createGain();
+            const compressor = ctx.createDynamicsCompressor();
+
+            masterGain.gain.setValueAtTime(0.0001, ctx.currentTime);
+            masterGain.gain.exponentialRampToValueAtTime(0.34, ctx.currentTime + 0.9);
+
+            toneFilter.type = 'lowpass';
+            toneFilter.frequency.value = 2200;
+            toneFilter.Q.value = 0.55;
+
+            delay.delayTime.value = 0.24;
+            feedback.gain.value = 0.16;
+            delayGain.gain.value = 0.18;
+
+            compressor.threshold.value = -18;
+            compressor.knee.value = 18;
+            compressor.ratio.value = 3;
+            compressor.attack.value = 0.01;
+            compressor.release.value = 0.18;
+
+            masterGain.connect(toneFilter);
+            toneFilter.connect(compressor);
+            compressor.connect(ctx.destination);
+            masterGain.connect(delay);
+            delay.connect(delayGain);
+            delayGain.connect(toneFilter);
+            delay.connect(feedback);
+            feedback.connect(delay);
+
+            const nodes = [masterGain, toneFilter, delay, feedback, delayGain, compressor];
+            const bpm = 104;
+            const stepDuration = 60 / bpm / 2;
+            const melody = [76, null, 79, 81, 83, null, 81, 79, 76, null, 74, 76, 79, null, 76, null, 72, null, 76, 79, 81, null, 79, 76, 74, null, 72, 74, 76, null, 74, null];
+            const chords = [
+                [48, 52, 55],
+                [45, 48, 52],
+                [41, 45, 48],
+                [43, 47, 50]
+            ];
+            let step = 0;
+
+            const tick = () => {
+                if (!ambientState.running) return;
+
+                const now = ctx.currentTime + 0.04;
+                const chordIndex = Math.floor((step % 32) / 8);
+
+                if (step % 8 === 0) {
+                    chords[chordIndex].forEach(note => {
+                        scheduleTone(ctx, masterGain, note, now, stepDuration * 7.5, {
+                            type: 'triangle',
+                            volume: 0.045,
+                            attack: 0.08,
+                            release: 0.25,
+                            cutoff: 1200
+                        });
+                    });
+                }
+
+                if (step % 4 === 0) {
+                    scheduleTone(ctx, masterGain, chords[chordIndex][0] - 12, now, stepDuration * 1.6, {
+                        type: 'triangle',
+                        volume: 0.105,
+                        attack: 0.018,
+                        release: 0.14,
+                        cutoff: 900
+                    });
+                }
+
+                const melodyNote = melody[step % melody.length];
+                if (melodyNote) {
+                    scheduleTone(ctx, masterGain, melodyNote, now, stepDuration * 0.72, {
+                        type: 'square',
+                        volume: 0.072,
+                        attack: 0.012,
+                        release: 0.08,
+                        cutoff: 1850
+                    });
+                }
+
+                if (step % 2 === 0) {
+                    scheduleTone(ctx, masterGain, 96, now, 0.035, {
+                        type: 'sine',
+                        volume: 0.018,
+                        attack: 0.003,
+                        release: 0.025,
+                        cutoff: 5000
+                    });
+                }
+
+                step = (step + 1) % 32;
+            };
+
+            ambientState.masterGain = masterGain;
+            ambientState.nodes = nodes;
+            ambientState.running = true;
+            ambientState.starting = false;
+
+            tick();
+            ambientState.interval = setInterval(tick, stepDuration * 1000);
+        }
+
+        function stopAmbientSound() {
+            ambientState.starting = false;
+            if (!ambientState.running) return;
+
+            const ctx = getAudioContext();
+            if (ctx && ambientState.masterGain) {
+                ambientState.masterGain.gain.cancelScheduledValues(ctx.currentTime);
+                ambientState.masterGain.gain.setValueAtTime(Math.max(ambientState.masterGain.gain.value, 0.0001), ctx.currentTime);
+                ambientState.masterGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.7);
+            }
+
+            clearInterval(ambientState.interval);
+            setTimeout(() => {
+                ambientState.nodes.forEach(node => {
+                    try {
+                        if (typeof node.stop === 'function') node.stop();
+                    } catch (error) {
+                        // El nodo ya pudo haberse detenido durante el fade out.
+                    }
+                    try {
+                        if (typeof node.disconnect === 'function') node.disconnect();
+                    } catch (error) {
+                        // Algunos nodos pueden estar desconectados.
+                    }
+                });
+
+                ambientState.nodes = [];
+                ambientState.masterGain = null;
+            }, 800);
+
+            ambientState.running = false;
+        }
+
+        const MISSIONS_DATA = [
+            {
+                id: 'm1',
+                topic: 'SUMAS EN PROBLEMAS',
+                title: 'La Tienda de Recompensas',
+                difficulty: 'Baja',
+                desc: 'Resuelve situaciones de la vida diaria usando adicion.',
+                icon: 'fa-plus',
+                questions: [
+                    { text: 'Nora tiene 24 pegatinas y gana 18 mas en una actividad. Cuantas pegatinas tiene ahora?', type: 'mcq', options: ['40', '42', '44', '52'], correct: 1, xp: 50 },
+                    { text: 'En una feria se vendieron 138 jugos en la manana y 56 en la tarde. Cuantos jugos se vendieron en total?', type: 'mcq', options: ['184', '190', '194', '204'], correct: 2, xp: 50 },
+                    { text: 'Cuando queremos juntar cantidades de dos grupos, normalmente usamos una suma.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                    { text: 'Un equipo consiguio 67 puntos en la primera ronda y 29 en la segunda. Cuantos puntos logro?', type: 'mcq', options: ['86', '94', '96', '98'], correct: 2, xp: 50 },
+                    { text: 'Una coleccion tiene 215 cartas y luego se agregan 80 cartas nuevas. Cuantas cartas hay ahora?', type: 'mcq', options: ['285', '290', '295', '305'], correct: 2, xp: 50 }
+                ]
+            },
+            {
+                id: 'm2',
+                topic: 'RESTAS EN PROBLEMAS',
+                title: 'El Inventario Perdido',
+                difficulty: 'Baja',
+                desc: 'Descubre cuanto queda o cuanto falta usando sustraccion.',
+                icon: 'fa-minus',
+                questions: [
+                    { text: 'Diego tenia 84 fichas y presto 39. Cuantas fichas le quedaron?', type: 'mcq', options: ['35', '45', '47', '55'], correct: 1, xp: 50 },
+                    { text: 'En una caja habia 150 colores. Se usaron 68 para una cartelera. Cuantos colores quedan?', type: 'mcq', options: ['72', '82', '88', '92'], correct: 1, xp: 50 },
+                    { text: 'Para saber cuanto queda despues de gastar o quitar, podemos usar una resta.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                    { text: 'Un videojuego tenia 96 cristales y se perdieron 27. Cuantos cristales quedan?', type: 'mcq', options: ['59', '67', '69', '73'], correct: 2, xp: 50 },
+                    { text: 'La biblioteca tenia 200 revistas y presto 125. Cuantas revistas quedaron?', type: 'mcq', options: ['65', '75', '85', '95'], correct: 1, xp: 50 }
+                ]
+            },
+            {
+                id: 'm3',
+                topic: 'MULTIPLICACION EN PROBLEMAS',
+                title: 'Paquetes de Energia',
+                difficulty: 'Media',
+                desc: 'Usa multiplicacion cuando hay grupos iguales.',
+                icon: 'fa-xmark',
+                questions: [
+                    { text: 'Hay 7 bolsas con 6 canicas en cada una. Cuantas canicas hay en total?', type: 'mcq', options: ['36', '42', '48', '56'], correct: 1, xp: 75 },
+                    { text: 'Una sala tiene 9 mesas con 4 sillas en cada mesa. Cuantas sillas hay?', type: 'mcq', options: ['28', '32', '36', '40'], correct: 2, xp: 75 },
+                    { text: 'La multiplicacion es util cuando tenemos varios grupos iguales.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                    { text: 'Cada caja trae 12 marcadores. Si hay 5 cajas, cuantos marcadores hay?', type: 'mcq', options: ['50', '55', '60', '65'], correct: 2, xp: 75 },
+                    { text: 'En un torneo hay 8 grupos con 7 estudiantes cada uno. Cuantos estudiantes participan?', type: 'mcq', options: ['48', '54', '56', '64'], correct: 2, xp: 75 }
+                ]
+            },
+            {
+                id: 'm4',
+                topic: 'DIVISION EN PROBLEMAS',
+                title: 'Reparto Justo',
+                difficulty: 'Media',
+                desc: 'Reparte cantidades en partes iguales usando division.',
+                icon: 'fa-divide',
+                questions: [
+                    { text: 'Hay 40 stickers para repartir en 5 sobres iguales. Cuantos stickers van en cada sobre?', type: 'mcq', options: ['6', '7', '8', '9'], correct: 2, xp: 75 },
+                    { text: 'Se reparten 54 tarjetas entre 6 estudiantes por igual. Cuantas recibe cada estudiante?', type: 'mcq', options: ['8', '9', '10', '12'], correct: 1, xp: 75 },
+                    { text: 'La division ayuda a repartir una cantidad en partes iguales.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                    { text: 'Un profesor pone 72 lapices en 8 cajas iguales. Cuantos lapices van en cada caja?', type: 'mcq', options: ['8', '9', '10', '12'], correct: 1, xp: 75 },
+                    { text: 'Hay 63 botones para 7 equipos iguales. Cuantos botones recibe cada equipo?', type: 'mcq', options: ['7', '8', '9', '10'], correct: 2, xp: 75 }
+                ]
+            },
+            {
+                id: 'm5',
+                topic: 'FRACCIONES',
+                title: 'Pizza Fraccionada',
+                difficulty: 'Media',
+                desc: 'Reconoce partes de un entero y compara fracciones simples.',
+                icon: 'fa-chart-pie',
+                questions: [
+                    { text: 'Un pastel se divide en 6 partes iguales y se comen 2. Que fraccion se comio?', type: 'mcq', options: ['2/6', '6/2', '4/6', '2/4'], correct: 0, xp: 75 },
+                    { text: 'Cual fraccion representa un cuarto?', type: 'mcq', options: ['1/4', '1/2', '2/3', '3/4'], correct: 0, xp: 75 },
+                    { text: 'En una fraccion, el numero de arriba indica cuantas partes se toman o se usan.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                    { text: 'Cual fraccion es mayor?', type: 'mcq', options: ['1/4', '3/4', '2/8', '1/8'], correct: 1, xp: 75 },
+                    { text: 'La fraccion 4/8 representa la misma cantidad que 1/2.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 75 }
+                ]
+            },
+            {
+                id: 'm6',
+                topic: 'SECUENCIAS Y PATRONES',
+                title: 'Codigo Secreto Numerico',
+                difficulty: 'Media',
+                desc: 'Encuentra reglas y completa patrones numericos.',
+                icon: 'fa-list-ol',
+                questions: [
+                    { text: 'Completa la secuencia: 4, 8, 12, 16, __', type: 'mcq', options: ['18', '19', '20', '24'], correct: 2, xp: 75 },
+                    { text: 'Completa la secuencia: 30, 25, 20, 15, __', type: 'mcq', options: ['5', '10', '12', '15'], correct: 1, xp: 100 },
+                    { text: 'En la secuencia 7, 14, 21, 28, el patron es sumar 7 cada vez.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                    { text: 'Completa la secuencia: 2, 6, 18, 54, __', type: 'mcq', options: ['72', '108', '120', '162'], correct: 3, xp: 75 },
+                    { text: 'Completa la secuencia: 1, 3, 6, 10, __', type: 'mcq', options: ['13', '15', '16', '20'], correct: 1, xp: 100 }
+                ]
+            },
+            {
+                id: 'm7',
+                topic: 'MEDICION',
+                title: 'Laboratorio de Medidas',
+                difficulty: 'Media',
+                desc: 'Usa unidades de longitud, peso, tiempo y capacidad.',
+                icon: 'fa-ruler-combined',
+                questions: [
+                    { text: 'Si una mesa mide 3 metros, cuantos centimetros mide?', type: 'mcq', options: ['30 cm', '100 cm', '300 cm', '3000 cm'], correct: 2, xp: 75 },
+                    { text: 'Cuantos minutos hay en 2 horas?', type: 'mcq', options: ['60', '90', '120', '200'], correct: 2, xp: 100 },
+                    { text: 'Los mililitros pueden usarse para medir pequenas cantidades de liquido.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                    { text: 'Cuantos gramos hay en 1 kilogramo?', type: 'mcq', options: ['10 g', '100 g', '1000 g', '10000 g'], correct: 2, xp: 75 },
+                    { text: 'Una clase empieza a las 4:20 p.m. y dura 30 minutos. A que hora termina?', type: 'mcq', options: ['4:40 p.m.', '4:45 p.m.', '4:50 p.m.', '5:20 p.m.'], correct: 2, xp: 100 }
+                ]
+            },
+            {
+                id: 'm8',
+                topic: 'PROBABILIDAD',
+                title: 'Reto de Posibilidades',
+                difficulty: 'Alta',
+                desc: 'Piensa que tan probable es que ocurra un resultado.',
+                icon: 'fa-dice',
+                questions: [
+                    { text: 'En una bolsa hay 6 fichas rojas y 2 verdes. Que color es mas probable sacar?', type: 'mcq', options: ['Rojo', 'Verde', 'Los dos igual', 'Ninguno'], correct: 0, xp: 100 },
+                    { text: 'En un dado normal, cual es la probabilidad de sacar un numero par?', type: 'mcq', options: ['2 de 6', '3 de 6', '4 de 6', '6 de 6'], correct: 1, xp: 100 },
+                    { text: 'Si una bolsa solo tiene fichas azules, sacar una ficha roja es imposible.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                    { text: 'Una ruleta tiene 4 colores iguales. Cual es la probabilidad de caer en un color especifico?', type: 'mcq', options: ['1 de 4', '2 de 4', '3 de 4', '4 de 4'], correct: 0, xp: 100 },
+                    { text: 'Al lanzar una moneda normal, cara y sello tienen la misma probabilidad.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 }
+                ]
+            },
+            {
+                id: 'm9',
+                topic: 'MISION ESPECIAL',
+                title: 'Tablas Relampago',
+                difficulty: 'Especial',
+                desc: 'Empareja multiplicaciones con sus resultados para repasar las tablas del 6, 7 y 8. Sin limite de tiempo.',
+                icon: 'fa-table-cells',
+                noTimeLimit: true,
+                questions: [
+                    { text: 'Empareja la tabla del 6 con sus resultados.', type: 'matching', table: 6, xp: 150 },
+                    { text: 'Empareja la tabla del 7 con sus resultados.', type: 'matching', table: 7, xp: 150 },
+                    { text: 'Empareja la tabla del 8 con sus resultados.', type: 'matching', table: 8, xp: 150 }
+                ]
+            }
+        ];
+
+        const QUESTION_BANK_VERSION = 'math-bank-2026-06-07-v3-special';
+
+        let appState = {
+            user: null,
+            missions: [],
+            currentMissionId: null,
+            currentMissionQuestions: [],
+            currentQuestionIdx: 0,
+            missionScore: 0,
+            missionTimer: 0,
+            missionDuration: 0,
+            timerInterval: null,
+            totalTimeSeconds: 0,
+            answerHistory: [],
+            questionBankVersion: QUESTION_BANK_VERSION
+        };
+        const MISSION_SECONDS_PER_QUESTION = 45;
+
+        window.onload = () => {
+            initParticles();
+            setupAmbientToggle();
+            loadState();
+            setupFormListeners();
+
+            if (appState.user) {
+                showScreen('dashboard-screen');
+                renderDashboard();
+                updateGlobalHUD();
+            } else {
+                showScreen('login-screen');
+            }
+        };
+
+        function saveState() {
+            const stateToSave = { ...appState, questionBankVersion: QUESTION_BANK_VERSION, timerInterval: null };
+            localStorage.setItem('mathCyberAcademyState', JSON.stringify(stateToSave));
+        }
+
+        function createFreshMissions() {
+            return MISSIONS_DATA.map((mission, index) => ({
+                ...mission,
+                status: index === 0 ? 'disponible' : 'bloqueada',
+                score: 0,
+                maxScore: mission.questions.reduce((sum, question) => sum + question.xp, 0),
+                completed: false,
+                timeSpent: 0
+            }));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('mathCyberAcademyState');
+            if (saved) {
+                const parsedState = JSON.parse(saved);
+                if (parsedState.questionBankVersion !== QUESTION_BANK_VERSION) {
+                    appState = {
+                        ...appState,
+                        user: parsedState.user || null,
+                        missions: createFreshMissions(),
+                        totalTimeSeconds: 0,
+                        answerHistory: [],
+                        questionBankVersion: QUESTION_BANK_VERSION,
+                        timerInterval: null
+                    };
+                    saveState();
+                    return;
+                }
+
+                appState = { ...appState, ...parsedState, questionBankVersion: QUESTION_BANK_VERSION, timerInterval: null };
+                appState.answerHistory = appState.answerHistory || [];
+                const savedMissions = appState.missions || [];
+                appState.missions = MISSIONS_DATA.map((mission, index) => {
+                    const previous = savedMissions.find(item => item.id === mission.id) || {};
+                    return {
+                        ...mission,
+                        status: previous.status || (index === 0 ? 'disponible' : 'bloqueada'),
+                        score: Math.min(previous.score || 0, mission.questions.reduce((sum, q) => sum + q.xp, 0)),
+                        maxScore: mission.questions.reduce((sum, q) => sum + q.xp, 0),
+                        completed: Boolean(previous.completed),
+                        timeSpent: previous.timeSpent || 0
+                    };
+                });
+            } else {
+                appState.missions = createFreshMissions();
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            window.scrollTo(0, 0);
+        }
+
+        function getPilotTeamName(animal) {
+            return `Team ${animal || 'Explorador'}`;
+        }
+
+        function showIntroScreen() {
+            if (!appState.user) return;
+            document.getElementById('intro-greeting').textContent = `Genio ${appState.user.name}, el comando espacial te estaba esperando.`;
+            document.getElementById('intro-team').textContent = getPilotTeamName(appState.user.animal);
+            document.getElementById('intro-copy').textContent = `${getPilotTeamName(appState.user.animal)} queda bajo tu mando. Las naves alien preparan un ataque con pulso electromagnetico, pero tus retos matematicos pueden cargar nuestro canon EMP defensivo.`;
+            showScreen('intro-screen');
+        }
+
+        function proceedFromIntro() {
+            showScreen('dashboard-screen');
+            renderDashboard();
+            updateGlobalHUD();
+        }
+
+        function setupFormListeners() {
+            const inputName = document.getElementById('input-name');
+            const inputAnimal = document.getElementById('input-animal');
+            const inputSquad = document.getElementById('input-squad');
+            const btnLogin = document.getElementById('btn-login');
+
+            const validateAll = () => {
+                const isNameValid = validateName(inputName.value);
+                const isAnimalValid = inputAnimal.value !== "";
+                const isSquadValid = validateSquad(inputSquad.value);
+                btnLogin.disabled = !(isNameValid && isAnimalValid && isSquadValid);
+            };
+
+            inputName.addEventListener('input', (e) => {
+                const valid = validateName(e.target.value);
+                toggleValidationUI('name', valid);
+                validateAll();
+            });
+
+            inputName.addEventListener('blur', (e) => {
+                e.target.value = toTitleCase(e.target.value);
+                validateAll();
+            });
+
+            inputAnimal.addEventListener('change', validateAll);
+
+            inputSquad.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                const valid = validateSquad(e.target.value);
+                toggleValidationUI('squad', valid);
+                validateAll();
+            });
+
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (!btnLogin.disabled) executeLogin();
+            });
+        }
+
+        function toTitleCase(str) {
+            return str.toLowerCase().replace(/(^|\s)\S/g, letter => letter.toUpperCase());
+        }
+
+        function validateName(val) {
+            if (!val.trim()) return false;
+            const spaceCount = (val.match(/ /g) || []).length;
+            const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ]+( [a-zA-ZáéíóúÁÉÍÓÚñÑ]+)*$/;
+            return spaceCount <= 3 && regex.test(val);
+        }
+
+        function validateSquad(val) {
+            return /^[A-Z0-9]{1,10}$/.test(val);
+        }
+
+        function toggleValidationUI(field, isValid) {
+            const check = document.getElementById(`check-${field}`);
+            const err = document.getElementById(`err-${field}`);
+            if (isValid) {
+                check.classList.remove('hidden');
+                err.classList.add('hidden');
+            } else {
+                check.classList.add('hidden');
+                err.classList.remove('hidden');
+            }
+        }
+
+        function executeLogin() {
+            appState.user = {
+                name: toTitleCase(document.getElementById('input-name').value),
+                animal: document.getElementById('input-animal').value,
+                squad: document.getElementById('input-squad').value.toUpperCase()
+            };
+            saveState();
+            playSynthSound('success');
+
+            document.body.style.opacity = '0';
+            setTimeout(() => {
+                showIntroScreen();
+                document.body.style.opacity = '1';
+            }, 300);
+        }
+
+        function updateGlobalHUD() {
+            if (!appState.user) return;
+
+            document.getElementById('hud-name').textContent = appState.user.name;
+            document.getElementById('hud-team').textContent = getPilotTeamName(appState.user.animal).toUpperCase();
+            document.getElementById('hud-squad').textContent = appState.user.squad;
+
+            const totalXP = appState.missions.reduce((sum, m) => sum + (m.score || 0), 0);
+            document.getElementById('hud-xp').textContent = totalXP;
+
+            let rank = "NOVATO";
+            if (totalXP > 200) rank = "APRENDIZ";
+            if (totalXP > 500) rank = "EXPLORADOR";
+            if (totalXP > 900) rank = "MAESTRO MATH";
+            document.getElementById('hud-rank').textContent = rank;
+
+            const allCompleted = appState.missions.every(m => m.completed);
+            document.getElementById('btn-ver-informe').style.display = allCompleted ? 'block' : 'none';
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('missions-container');
+            container.innerHTML = '';
+
+            appState.missions.forEach((m, index) => {
+                if (index > 0 && appState.missions[index - 1].completed && !m.completed) {
+                    m.status = 'disponible';
+                }
+
+                const isLocked = m.status === 'bloqueada';
+                const isCompleted = m.completed;
+
+                let borderClass = 'border-gray-700';
+                let glowClass = '';
+                let statusBadge = '';
+                let btnHtml = '';
+                const progressPercent = isCompleted ? 100 : 0;
+
+                if (isLocked) {
+                    statusBadge = '<span class="bg-gray-800 text-gray-400 text-[10px] px-2 py-1 rounded border border-gray-600"><i class="fas fa-lock"></i> BLOQUEADA</span>';
+                    btnHtml = '<button disabled class="cyber-btn w-full py-2 mt-4 text-sm opacity-50"><i class="fas fa-ban"></i> RESTRINGIDO</button>';
+                } else if (isCompleted) {
+                    borderClass = 'border-neonGreen';
+                    glowClass = 'shadow-[0_0_15px_rgba(0,255,102,0.2)]';
+                    statusBadge = '<span class="bg-green-900 text-neonGreen text-[10px] px-2 py-1 rounded border border-neonGreen"><i class="fas fa-check"></i> COMPLETADA</span>';
+                    btnHtml = `<button onclick="startMission('${m.id}')" class="cyber-btn w-full py-2 mt-4 text-sm border-neonGreen text-neonGreen hover:bg-neonGreen"><i class="fas fa-redo"></i> REPETIR MISION</button>`;
+                } else {
+                    borderClass = 'border-neonCyan';
+                    glowClass = 'shadow-[0_0_15px_rgba(0,229,255,0.2)]';
+                    statusBadge = '<span class="bg-blue-900 text-neonCyan text-[10px] px-2 py-1 rounded border border-neonCyan animate-pulse"><i class="fas fa-unlock"></i> DISPONIBLE</span>';
+                    btnHtml = `<button onclick="startMission('${m.id}')" class="cyber-btn w-full py-2 mt-4 text-sm bg-neonCyan/10"><i class="fas fa-play"></i> INICIAR SECUENCIA</button>`;
+                }
+
+                const cardHTML = `
+                    <div class="glass-panel p-6 rounded-lg border ${borderClass} ${glowClass} flex flex-col transition-transform hover:-translate-y-1">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="w-10 h-10 rounded bg-darkBg border border-gray-600 flex items-center justify-center text-xl text-gray-300">
+                                <i class="fas ${m.icon}"></i>
+                            </div>
+                            ${statusBadge}
+                        </div>
+                        <h3 class="font-cyber text-lg text-white mb-1">${m.title}</h3>
+                        <p class="text-xs text-neonPurple font-bold mb-3 tracking-wider">${m.topic}</p>
+                        <p class="text-sm text-gray-400 mb-4 flex-grow">${m.desc}</p>
+                        <div class="mt-auto">
+                            <div class="flex justify-between text-xs text-gray-500 font-mono mb-1">
+                                <span>PUNTAJE: <span class="text-white">${m.score}/${m.maxScore} XP</span></span>
+                                <span>DIF: ${m.difficulty}</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-neonBlue to-neonCyan h-full" style="width: ${progressPercent}%"></div>
+                            </div>
+                            ${btnHtml}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            });
+
+            saveState();
+        }
+
+        function randomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function createNumericOptions(answer, offsets = [-12, -5, 7, 13]) {
+            const values = new Set([answer]);
+            offsets.forEach(offset => {
+                const value = answer + offset;
+                if (value >= 0) values.add(value);
+            });
+
+            while (values.size < 4) {
+                const delta = randomInt(2, 18) * (Math.random() > 0.5 ? 1 : -1);
+                const value = answer + delta;
+                if (value >= 0) values.add(value);
+            }
+
+            const options = shuffleArray([...values]).slice(0, 4);
+            if (!options.includes(answer)) options[randomInt(0, 3)] = answer;
+            return {
+                options: options.map(String),
+                correct: options.indexOf(answer)
+            };
+        }
+
+        function createChoiceQuestion(text, answer, wrongOptions, xp) {
+            const optionSet = new Set([answer, ...wrongOptions]);
+            let guard = 0;
+            while (optionSet.size < 4 && guard < 20) {
+                optionSet.add(`Opcion ${guard + 1}`);
+                guard++;
+            }
+            const options = shuffleArray([...optionSet]).slice(0, 4);
+            if (!options.includes(answer)) options[randomInt(0, 3)] = answer;
+            return {
+                text,
+                type: 'mcq',
+                options: options.map(String),
+                correct: options.indexOf(answer),
+                xp
+            };
+        }
+
+        function createNumericQuestion(text, answer, xp, offsets) {
+            const optionData = createNumericOptions(answer, offsets);
+            return {
+                text,
+                type: 'mcq',
+                options: optionData.options,
+                correct: optionData.correct,
+                xp
+            };
+        }
+
+        function generateAdditionQuestions() {
+            const a1 = randomInt(12, 45);
+            const b1 = randomInt(13, 49);
+            const a2 = randomInt(90, 180);
+            const b2 = randomInt(35, 95);
+            const a3 = randomInt(20, 60);
+            const b3 = randomInt(15, 45);
+            const a4 = randomInt(50, 120);
+            const b4 = randomInt(18, 70);
+
+            return [
+                createNumericQuestion(`Lina tiene ${a1} cristales de energia y encuentra ${b1} mas. Cuantos cristales tiene ahora?`, a1 + b1, 50),
+                createNumericQuestion(`En la base espacial hay ${a2} robots reparando naves y llegan ${b2} robots nuevos. Cuantos robots hay en total?`, a2 + b2, 50),
+                { text: `Si juntas ${a3} puntos de una ronda y ${b3} puntos de otra, debes sumar para saber el total.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                createNumericQuestion(`El Team reunio ${a3} baterias y despues recibio ${b3} baterias extras. Cuantas baterias reunio?`, a3 + b3, 50),
+                createNumericQuestion(`Una nave cargo ${a4} unidades de energia azul y ${b4} de energia verde. Cuanta energia cargo en total?`, a4 + b4, 50)
+            ];
+        }
+
+        function generateSubtractionQuestions() {
+            const total1 = randomInt(70, 130);
+            const spent1 = randomInt(20, 55);
+            const total2 = randomInt(140, 240);
+            const used2 = randomInt(45, 110);
+            const total3 = randomInt(80, 150);
+            const left3 = randomInt(25, 65);
+            const total4 = randomInt(100, 210);
+            const lost4 = randomInt(30, 90);
+
+            return [
+                createNumericQuestion(`Tomas tenia ${total1} monedas galacticas y gasto ${spent1}. Cuantas monedas le quedan?`, total1 - spent1, 50),
+                createNumericQuestion(`Habia ${total2} drones en el hangar y despegaron ${used2}. Cuantos drones quedaron?`, total2 - used2, 50),
+                { text: `Si habia ${total3} escudos y ahora quedan ${left3}, para saber cuantos se usaron hacemos ${total3} - ${left3}.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                createNumericQuestion(`Una nave tenia ${total4} cargas de plasma y perdio ${lost4}. Cuantas cargas conserva?`, total4 - lost4, 50),
+                createNumericQuestion(`El laboratorio tenia ${total2} piezas y envio ${spent1} a reparacion. Cuantas piezas quedan?`, total2 - spent1, 50)
+            ];
+        }
+
+        function generateMultiplicationQuestions() {
+            const groups1 = randomInt(4, 9);
+            const each1 = randomInt(5, 12);
+            const rows = randomInt(3, 8);
+            const seats = randomInt(4, 9);
+            const groups2 = randomInt(5, 10);
+            const each2 = randomInt(6, 12);
+            const teams = randomInt(4, 9);
+            const pilots = randomInt(5, 8);
+
+            return [
+                createNumericQuestion(`Hay ${groups1} cajas con ${each1} sensores en cada una. Cuantos sensores hay en total?`, groups1 * each1, 75),
+                createNumericQuestion(`La sala de mando tiene ${rows} filas con ${seats} asientos cada una. Cuantos asientos hay?`, rows * seats, 75),
+                { text: `Sumar ${each1} un total de ${groups1} veces es lo mismo que multiplicar ${groups1} x ${each1}.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                createNumericQuestion(`Cada modulo trae ${each2} chips. Si hay ${groups2} modulos, cuantos chips hay?`, groups2 * each2, 75),
+                createNumericQuestion(`En la flota hay ${teams} escuadrones con ${pilots} pilotos cada uno. Cuantos pilotos participan?`, teams * pilots, 75)
+            ];
+        }
+
+        function generateDivisionQuestions() {
+            const divisor1 = randomInt(4, 9);
+            const quotient1 = randomInt(5, 10);
+            const divisor2 = randomInt(5, 9);
+            const quotient2 = randomInt(6, 11);
+            const divisor3 = randomInt(3, 8);
+            const quotient3 = randomInt(4, 10);
+            const divisor4 = randomInt(6, 10);
+            const quotient4 = randomInt(5, 9);
+
+            return [
+                createNumericQuestion(`Hay ${divisor1 * quotient1} tarjetas de acceso para repartir en ${divisor1} grupos iguales. Cuantas recibe cada grupo?`, quotient1, 75, [-2, -1, 1, 2]),
+                createNumericQuestion(`Se reparten ${divisor2 * quotient2} herramientas entre ${divisor2} pilotos por igual. Cuantas recibe cada piloto?`, quotient2, 75, [-2, -1, 1, 3]),
+                { text: `Si repartimos ${divisor3 * quotient3} objetos entre ${divisor3} equipos iguales, cada equipo recibe ${quotient3}.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                createNumericQuestion(`El comando guardo ${divisor4 * quotient4} baterias en ${divisor4} cajas iguales. Cuantas baterias van en cada caja?`, quotient4, 75, [-2, -1, 1, 2]),
+                createNumericQuestion(`Hay ${divisor1 * quotient2} insignias para ${divisor1} pilotos. Si todos reciben igual, cuantas insignias obtiene cada piloto?`, quotient2, 75, [-2, -1, 1, 2])
+            ];
+        }
+
+        function generateFractionQuestions() {
+            const denom1 = [6, 8, 10, 12][randomInt(0, 3)];
+            const numer1 = randomInt(2, denom1 - 2);
+            const denom2 = [4, 5, 6, 8][randomInt(0, 3)];
+            const numer2 = randomInt(1, denom2 - 1);
+            const greaterDenom = [6, 8, 10, 12][randomInt(0, 3)];
+
+            return [
+                createChoiceQuestion(`Un panel se divide en ${denom1} partes iguales y se iluminan ${numer1}. Que fraccion se ilumino?`, `${numer1}/${denom1}`, [`${denom1}/${numer1}`, `${denom1 - numer1}/${denom1}`, `${numer1}/${denom1 - 1}`], 75),
+                createChoiceQuestion('Cual fraccion representa tres cuartos?', '3/4', ['1/4', '1/2', '4/3'], 75),
+                { text: `Si una barra se divide en ${denom2} partes iguales y se toman ${numer2}, el denominador es ${denom2}.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                createChoiceQuestion(`Cual fraccion es mayor si todas tienen denominador ${greaterDenom}?`, `${greaterDenom - 1}/${greaterDenom}`, [`1/${greaterDenom}`, `2/${greaterDenom}`, `${Math.floor(greaterDenom / 2)}/${greaterDenom}`], 75),
+                { text: `La fraccion ${denom1 / 2}/${denom1} representa la misma cantidad que 1/2.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 75 }
+            ];
+        }
+
+        function generateSequenceQuestions() {
+            const start1 = randomInt(2, 9);
+            const step1 = randomInt(3, 9);
+            const start2 = randomInt(40, 90);
+            const step2 = randomInt(4, 12);
+            const multiplier = randomInt(2, 3);
+            const start3 = randomInt(2, 5);
+
+            return [
+                createNumericQuestion(`Completa la secuencia: ${start1}, ${start1 + step1}, ${start1 + step1 * 2}, ${start1 + step1 * 3}, __`, start1 + step1 * 4, 75),
+                createNumericQuestion(`Completa la secuencia: ${start2}, ${start2 - step2}, ${start2 - step2 * 2}, ${start2 - step2 * 3}, __`, start2 - step2 * 4, 100),
+                { text: `En la secuencia ${step1}, ${step1 * 2}, ${step1 * 3}, ${step1 * 4}, el patron es sumar ${step1} cada vez.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                createNumericQuestion(`Completa la secuencia: ${start3}, ${start3 * multiplier}, ${start3 * multiplier ** 2}, ${start3 * multiplier ** 3}, __`, start3 * multiplier ** 4, 75),
+                createNumericQuestion('Completa la secuencia: 2, 5, 9, 14, __', 20, 100, [-3, -1, 2, 4])
+            ];
+        }
+
+        function generateMeasurementQuestions() {
+            const meters = randomInt(2, 7);
+            const hours = randomInt(2, 4);
+            const kilos = randomInt(1, 5);
+            const startMinute = [0, 10, 15, 20, 30][randomInt(0, 4)];
+            const duration = [20, 30, 40, 45][randomInt(0, 3)];
+            const endMinute = startMinute + duration;
+            const endHour = 4 + Math.floor(endMinute / 60);
+            const shownEndMinute = (endMinute % 60).toString().padStart(2, '0');
+            const answerTime = `${endHour}:${shownEndMinute} p.m.`;
+            const formatPracticeTime = (minutesFromFour) => {
+                const normalizedMinutes = Math.max(0, minutesFromFour);
+                const hour = 4 + Math.floor(normalizedMinutes / 60);
+                const minute = (normalizedMinutes % 60).toString().padStart(2, '0');
+                return `${hour}:${minute} p.m.`;
+            };
+            const wrongTimes = [endMinute - 10, endMinute + 10, endMinute + 20, startMinute + 60]
+                .map(formatPracticeTime)
+                .filter(time => time !== answerTime);
+
+            return [
+                createChoiceQuestion(`Si una antena mide ${meters} metros, cuantos centimetros mide?`, `${meters * 100} cm`, [`${meters * 10} cm`, `${meters * 1000} cm`, `${meters + 100} cm`], 75),
+                createNumericQuestion(`Cuantos minutos hay en ${hours} horas?`, hours * 60, 100, [-30, -15, 15, 30]),
+                { text: 'Los centimetros pueden usarse para medir longitudes pequenas.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                createChoiceQuestion(`Cuantos gramos hay en ${kilos} kilogramos?`, `${kilos * 1000} g`, [`${kilos * 100} g`, `${kilos * 10} g`, `${kilos * 10000} g`], 75),
+                createChoiceQuestion(`Una practica empieza a las 4:${startMinute.toString().padStart(2, '0')} p.m. y dura ${duration} minutos. A que hora termina?`, answerTime, wrongTimes, 100)
+            ];
+        }
+
+        function generateProbabilityQuestions() {
+            const red = randomInt(4, 9);
+            const green = randomInt(1, red - 1);
+            const totalColors = randomInt(3, 6);
+            const yellow = randomInt(2, 6);
+            const blue = yellow;
+
+            return [
+                createChoiceQuestion(`En una bolsa hay ${red} fichas rojas y ${green} verdes. Que color es mas probable sacar?`, 'Rojo', ['Verde', 'Los dos igual', 'Ninguno'], 100),
+                createChoiceQuestion('En un dado normal, cual es la probabilidad de sacar un numero mayor que 4?', '2 de 6', ['1 de 6', '3 de 6', '4 de 6'], 100),
+                { text: `Si una bolsa solo tiene fichas moradas, sacar una ficha amarilla es imposible.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
+                createChoiceQuestion(`Una ruleta tiene ${totalColors} colores iguales. Cual es la probabilidad de caer en un color especifico?`, `1 de ${totalColors}`, [`2 de ${totalColors}`, `${totalColors - 1} de ${totalColors}`, `${totalColors} de ${totalColors}`], 100),
+                { text: `Una bolsa tiene ${yellow} fichas amarillas y ${blue} fichas azules. Sacar amarillo y sacar azul tienen la misma probabilidad.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 }
+            ];
+        }
+
+        function generateMissionRunQuestions(mission) {
+            const generators = {
+                m1: generateAdditionQuestions,
+                m2: generateSubtractionQuestions,
+                m3: generateMultiplicationQuestions,
+                m4: generateDivisionQuestions,
+                m5: generateFractionQuestions,
+                m6: generateSequenceQuestions,
+                m7: generateMeasurementQuestions,
+                m8: generateProbabilityQuestions
+            };
+
+            if (generators[mission.id]) return generators[mission.id]();
+            return mission.questions.map(question => ({ ...question }));
+        }
+
+        function startMission(id) {
+            appState.currentMissionId = id;
+            appState.currentMissionQuestions = [];
+            appState.currentQuestionIdx = 0;
+            appState.missionScore = 0;
+
+            const mission = appState.missions.find(m => m.id === id);
+            appState.currentMissionQuestions = generateMissionRunQuestions(mission);
+            appState.missionDuration = mission.noTimeLimit ? 0 : appState.currentMissionQuestions.length * MISSION_SECONDS_PER_QUESTION;
+            appState.missionTimer = appState.missionDuration;
+            document.getElementById('active-mission-topic').textContent = mission.topic;
+            document.getElementById('active-mission-title').textContent = mission.title;
+            document.getElementById('instance-id').textContent = `INST-${Math.floor(Math.random() * 9000) + 1000}-${id.toUpperCase()}`;
+
+            showScreen('mission-screen');
+            playSynthSound('hover');
+            if (mission.noTimeLimit) {
+                clearInterval(appState.timerInterval);
+                document.getElementById('mission-timer').textContent = 'SIN LIMITE';
+                document.getElementById('mission-timer').classList.remove('text-neonRed');
+            } else {
+                startTimer();
+            }
+            loadQuestion();
+        }
+
+        function startTimer() {
+            clearInterval(appState.timerInterval);
+            updateTimerDisplay();
+            appState.timerInterval = setInterval(() => {
+                appState.missionTimer--;
+                appState.totalTimeSeconds++;
+                updateTimerDisplay();
+                if (appState.missionTimer <= 0) {
+                    clearInterval(appState.timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(appState.missionTimer / 60).toString().padStart(2, '0');
+            const secs = (appState.missionTimer % 60).toString().padStart(2, '0');
+            const timerEl = document.getElementById('mission-timer');
+            timerEl.textContent = `${mins}:${secs}`;
+            timerEl.classList.toggle('text-neonRed', appState.missionTimer <= 10);
+        }
+
+        function loadQuestion() {
+            const mission = appState.missions.find(m => m.id === appState.currentMissionId);
+            const runQuestions = appState.currentMissionQuestions.length ? appState.currentMissionQuestions : mission.questions;
+            const question = runQuestions[appState.currentQuestionIdx];
+            const progress = (appState.currentQuestionIdx / runQuestions.length) * 100;
+
+            document.getElementById('mission-progress-bar').style.width = `${progress}%`;
+            document.getElementById('mission-progress-text').textContent = `${appState.currentQuestionIdx + 1}/${runQuestions.length}`;
+
+            const questionText = document.getElementById('question-text');
+            const optionsContainer = document.getElementById('options-container');
+            const feedback = document.getElementById('question-feedback');
+
+            questionText.textContent = question.text;
+            optionsContainer.innerHTML = '';
+            optionsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-4 mt-4';
+            feedback.style.opacity = '0';
+
+            questionText.parentElement.classList.remove('animate-[fadeIn_0.3s_ease-out]');
+            void questionText.parentElement.offsetWidth;
+            questionText.parentElement.classList.add('animate-[fadeIn_0.3s_ease-out]');
+
+            if (question.type === 'matching') {
+                renderMatchingQuestion(mission, question, optionsContainer, feedback);
+                return;
+            }
+
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'glass-panel p-4 text-left font-hud text-base md:text-lg border border-gray-600 hover:border-neonCyan transition-all hover:bg-neonCyan/10 relative overflow-hidden group rounded';
+                button.innerHTML = `
+                    <div class="absolute left-0 top-0 w-1 h-full bg-gray-600 group-hover:bg-neonCyan transition-colors"></div>
+                    <span class="text-neonCyan font-mono text-sm mr-2">[${String.fromCharCode(65 + index)}]</span> ${option}
+                `;
+                button.onclick = () => processAnswer(index, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function shuffleArray(items) {
+            const shuffled = [...items];
+            for (let index = shuffled.length - 1; index > 0; index--) {
+                const randomIndex = Math.floor(Math.random() * (index + 1));
+                [shuffled[index], shuffled[randomIndex]] = [shuffled[randomIndex], shuffled[index]];
+            }
+            return shuffled;
+        }
+
+        function renderMatchingQuestion(mission, question, optionsContainer, feedback) {
+            const tableNumber = question.table;
+            const factors = Array.from({ length: 10 }, (_, index) => index + 1);
+            const results = shuffleArray(factors.map(factor => factor * tableNumber));
+            let selectedFactor = null;
+            let matchedCount = 0;
+
+            optionsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-5 mt-4';
+            optionsContainer.innerHTML = `
+                <div>
+                    <p class="text-xs font-cyber text-neonCyan mb-3 tracking-wider">MULTIPLICACIONES</p>
+                    <div id="matching-left" class="grid grid-cols-1 gap-2"></div>
+                </div>
+                <div>
+                    <p class="text-xs font-cyber text-neonPurple mb-3 tracking-wider">RESULTADOS</p>
+                    <div id="matching-right" class="grid grid-cols-2 gap-2"></div>
+                </div>
+            `;
+
+            const leftContainer = document.getElementById('matching-left');
+            const rightContainer = document.getElementById('matching-right');
+
+            factors.forEach(factor => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.dataset.factor = String(factor);
+                button.className = 'matching-choice glass-panel p-3 text-left font-mono text-sm md:text-base border border-gray-600 rounded transition-all hover:border-neonCyan';
+                button.textContent = `${tableNumber} x ${factor}`;
+                button.onclick = () => {
+                    if (button.classList.contains('matched')) return;
+                    leftContainer.querySelectorAll('button').forEach(item => item.classList.remove('selected'));
+                    button.classList.add('selected');
+                    selectedFactor = factor;
+                };
+                leftContainer.appendChild(button);
+            });
+
+            results.forEach(result => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.dataset.result = String(result);
+                button.className = 'matching-choice glass-panel p-3 text-center font-mono text-sm md:text-base border border-gray-600 rounded transition-all hover:border-neonPurple';
+                button.textContent = String(result);
+                button.onclick = () => {
+                    if (button.classList.contains('matched') || selectedFactor === null) return;
+
+                    const expectedResult = selectedFactor * tableNumber;
+                    const selectedLeft = leftContainer.querySelector(`button[data-factor="${selectedFactor}"]`);
+
+                    if (Number(button.dataset.result) === expectedResult) {
+                        selectedLeft.classList.remove('selected');
+                        selectedLeft.classList.add('matched');
+                        selectedLeft.disabled = true;
+                        button.classList.add('matched');
+                        button.disabled = true;
+                        selectedFactor = null;
+                        matchedCount++;
+                        feedback.innerHTML = `<span class="text-neonGreen"><i class="fas fa-link"></i> PAREJA CORRECTA ${matchedCount}/10</span>`;
+                        feedback.style.opacity = '1';
+                        playSynthSound('success');
+
+                        if (matchedCount === 10) {
+                            completeMatchingQuestion(mission, question);
+                        }
+                    } else {
+                        button.classList.add('flash-red', 'border-neonRed', 'bg-neonRed/20');
+                        feedback.innerHTML = '<span class="text-neonRed"><i class="fas fa-times-circle"></i> INTENTA OTRA PAREJA</span>';
+                        feedback.style.opacity = '1';
+                        playSynthSound('error');
+                        setTimeout(() => {
+                            button.classList.remove('flash-red', 'border-neonRed', 'bg-neonRed/20');
+                        }, 550);
+                    }
+                };
+                rightContainer.appendChild(button);
+            });
+        }
+
+        function completeMatchingQuestion(mission, question) {
+            appState.missionScore += question.xp;
+            appState.answerHistory.push({
+                missionId: mission.id,
+                missionTitle: mission.title,
+                questionIndex: appState.currentQuestionIdx,
+                questionText: question.text,
+                selectedOption: `Tabla del ${question.table} emparejada`,
+                correctOption: `Resultados del ${question.table}x1 al ${question.table}x10`,
+                isCorrect: true,
+                answeredAt: new Date().toISOString()
+            });
+
+            const feedback = document.getElementById('question-feedback');
+            feedback.innerHTML = '<span class="text-neonGreen"><i class="fas fa-check-circle"></i> TABLA COMPLETA</span>';
+            feedback.style.opacity = '1';
+
+            setTimeout(() => {
+                appState.currentQuestionIdx++;
+                const runQuestions = appState.currentMissionQuestions.length ? appState.currentMissionQuestions : mission.questions;
+                if (appState.currentQuestionIdx < runQuestions.length) {
+                    loadQuestion();
+                } else {
+                    completeMission();
+                }
+            }, 1400);
+        }
+
+        function processAnswer(selectedIdx, btnElement) {
+            const mission = appState.missions.find(m => m.id === appState.currentMissionId);
+            const runQuestions = appState.currentMissionQuestions.length ? appState.currentMissionQuestions : mission.questions;
+            const question = runQuestions[appState.currentQuestionIdx];
+            const feedback = document.getElementById('question-feedback');
+            const allButtons = document.getElementById('options-container').querySelectorAll('button');
+
+            allButtons.forEach(button => {
+                button.disabled = true;
+            });
+
+            appState.answerHistory.push({
+                missionId: mission.id,
+                missionTitle: mission.title,
+                questionIndex: appState.currentQuestionIdx,
+                questionText: question.text,
+                selectedOption: question.options[selectedIdx],
+                correctOption: question.options[question.correct],
+                isCorrect: selectedIdx === question.correct,
+                answeredAt: new Date().toISOString()
+            });
+
+            if (selectedIdx === question.correct) {
+                appState.missionScore += question.xp;
+                btnElement.classList.add('border-neonGreen', 'bg-neonGreen/20', 'flash-green');
+                feedback.innerHTML = '<span class="text-neonGreen"><i class="fas fa-check-circle"></i> RESPUESTA CORRECTA</span>';
+                playSynthSound('success');
+            } else {
+                btnElement.classList.add('border-neonRed', 'bg-neonRed/20', 'flash-red');
+                allButtons[question.correct].classList.add('border-neonGreen', 'bg-neonGreen/20');
+                feedback.innerHTML = '<span class="text-neonRed"><i class="fas fa-times-circle"></i> REVISA EL CALCULO</span>';
+                playSynthSound('error');
+            }
+
+            feedback.style.opacity = '1';
+
+            setTimeout(() => {
+                appState.currentQuestionIdx++;
+                const runQuestions = appState.currentMissionQuestions.length ? appState.currentMissionQuestions : mission.questions;
+                if (appState.currentQuestionIdx < runQuestions.length) {
+                    loadQuestion();
+                } else {
+                    completeMission();
+                }
+            }, 1800);
+        }
+
+        function handleTimeOut() {
+            const mission = appState.missions.find(m => m.id === appState.currentMissionId);
+            const runQuestions = appState.currentMissionQuestions.length ? appState.currentMissionQuestions : mission?.questions;
+            const question = runQuestions?.[appState.currentQuestionIdx];
+            const feedback = document.getElementById('question-feedback');
+            feedback.innerHTML = '<span class="text-neonRed"><i class="fas fa-hourglass-end"></i> TIEMPO AGOTADO</span>';
+            feedback.style.opacity = '1';
+            playSynthSound('error');
+
+            if (mission && question) {
+                appState.answerHistory.push({
+                    missionId: mission.id,
+                    missionTitle: mission.title,
+                    questionIndex: appState.currentQuestionIdx,
+                    questionText: question.text,
+                    selectedOption: 'Sin respuesta',
+                    correctOption: question.options[question.correct],
+                    isCorrect: false,
+                    answeredAt: new Date().toISOString()
+                });
+            }
+
+            document.getElementById('options-container').querySelectorAll('button').forEach(button => {
+                button.disabled = true;
+            });
+
+            setTimeout(completeMission, 1800);
+        }
+
+        function abortMission() {
+            showCustomModal(
+                "ABORTAR MISION",
+                "Estas seguro de que deseas cancelar el reto actual? Se perdera el progreso no guardado.",
+                () => {
+                    clearInterval(appState.timerInterval);
+                    hideCustomModal();
+                    showScreen('dashboard-screen');
+                },
+                true
+            );
+        }
+
+        function completeMission() {
+            clearInterval(appState.timerInterval);
+
+            const missionIndex = appState.missions.findIndex(m => m.id === appState.currentMissionId);
+            const mission = appState.missions[missionIndex];
+            mission.score = Math.max(mission.score, appState.missionScore);
+            mission.completed = true;
+            const runQuestions = appState.currentMissionQuestions.length ? appState.currentMissionQuestions : mission.questions;
+            const missionDuration = mission.noTimeLimit ? 0 : (appState.missionDuration || (runQuestions.length * MISSION_SECONDS_PER_QUESTION));
+            mission.timeSpent += mission.noTimeLimit ? 0 : Math.max(0, missionDuration - appState.missionTimer);
+            appState.currentMissionQuestions = [];
+
+            document.getElementById('mission-progress-bar').style.width = '100%';
+            saveState();
+
+            showCustomModal(
+                "MISION COMPLETADA",
+                `Reto finalizado. XP obtenida en este intento: ${appState.missionScore}.`,
+                () => {
+                    hideCustomModal();
+                    updateGlobalHUD();
+                    renderDashboard();
+
+                    if (appState.missions.every(m => m.completed)) {
+                        goToResults();
+                    } else {
+                        showScreen('dashboard-screen');
+                    }
+                },
+                false
+            );
+
+            playSynthSound('success');
+        }
+
+        function goToResults() {
+            calculateFinalResults();
+            showScreen('results-screen');
+        }
+
+        function getScoreBand(percent) {
+            if (percent < 60) return 'practice';
+            if (percent < 70) return 'acceptable';
+            if (percent < 90) return 'strong';
+            return 'excellent';
+        }
+
+        function getAnimalMotivationalMessage(animal, percent) {
+            const selectedAnimal = animal || 'Explorador';
+            const scoreBand = getScoreBand(percent);
+            const messages = {
+                Leon: {
+                    practice: 'Como un leon joven, hoy estas aprendiendo a sacar fuerza cuando el reto se pone dificil. Respira, vuelve a intentarlo y tu rugido matematico crecera.',
+                    acceptable: 'Tu espiritu de leon ya desperto: avanzaste con valor y cada ejercicio te hace mas fuerte. Sigue practicando y tu rugido sera mas claro.',
+                    strong: 'El leon camina con seguridad cuando conoce su camino. Tu puntaje muestra que estas pensando con calma y liderando tus respuestas.',
+                    excellent: 'Rugido de campeon: tu espiritu de leon brillo con fuerza, confianza y mucha concentracion matematica.'
+                },
+                Tigre: {
+                    practice: 'El tigre no se rinde cuando falla un salto: observa, calcula y vuelve a intentarlo. Tus matematicas tambien mejoran con cada intento.',
+                    acceptable: 'Tu espiritu de tigre esta atento y listo. Ya diste buenos pasos; ahora afina tus calculos como si prepararas el mejor salto.',
+                    strong: 'Como un tigre concentrado, seguiste las pistas y atacaste los problemas con buena estrategia.',
+                    excellent: 'Gran salto de tigre: resolviste con energia, precision y una mente muy despierta.'
+                },
+                Aguila: {
+                    practice: 'El aguila aprende a volar mirando alto. Aunque el puntaje sea bajo, ya viste el camino: repasa con calma y vuelve a elevarte.',
+                    acceptable: 'Tu espiritu de aguila va ganando altura. Sigue mirando los detalles y tus respuestas volaran mas lejos.',
+                    strong: 'Como un aguila, viste los patrones desde arriba y elegiste muchas rutas correctas.',
+                    excellent: 'Vuelo perfecto de aguila: miraste alto, pensaste claro y dominaste el reto matematico.'
+                },
+                Delfin: {
+                    practice: 'El delfin aprende jugando y probando otra vez. Si hoy costó, no pasa nada: vuelve a nadar por los problemas paso a paso.',
+                    acceptable: 'Tu espiritu de delfin esta curioso y alegre. Ya nadaste bien por varios retos; practica un poco mas y llegaras mas lejos.',
+                    strong: 'Como un delfin inteligente, conectaste ideas y resolviste con buena memoria y ritmo.',
+                    excellent: 'Salto brillante de delfin: resolviste con alegria, inteligencia y mucha concentracion.'
+                },
+                Gato: {
+                    practice: 'El gato cae, se acomoda y vuelve a intentarlo con calma. Tus errores son pistas para mejorar tus calculos.',
+                    acceptable: 'Tu espiritu de gato fue curioso y atento. Sigue revisando despacio y tus respuestas seran cada vez mas precisas.',
+                    strong: 'Como un gato observador, encontraste detalles importantes y avanzaste con mucha agilidad.',
+                    excellent: 'Agilidad de gato experto: pensaste rapido, miraste bien y resolviste con elegancia.'
+                },
+                Perro: {
+                    practice: 'El perro aprende con practica, alegria y paciencia. Hoy entrenaste tu mente; manana tus resultados pueden ser mucho mejores.',
+                    acceptable: 'Tu espiritu de perro fiel no abandona el reto. Ya vas bien: sigue entrenando y cada problema sera mas facil.',
+                    strong: 'Como un perro atento, seguiste las pistas y respondiste con energia y confianza.',
+                    excellent: 'Mision cumplida con espiritu de perro campeon: constancia, alegria y gran concentracion.'
+                },
+                Conejo: {
+                    practice: 'El conejo avanza con saltos pequenos. Aunque hoy falte practica, cada salto te acerca a entender mejor.',
+                    acceptable: 'Tu espiritu de conejo ya dio buenos saltos. Sigue avanzando con calma y veras como crece tu puntaje.',
+                    strong: 'Como un conejo agil, saltaste entre problemas y encontraste muchas respuestas correctas.',
+                    excellent: 'Saltos perfectos de conejo: rapidez, cuidado y una mente matematica muy despierta.'
+                },
+                Explorador: {
+                    practice: 'Hoy estas en entrenamiento. Lo importante es volver a intentarlo con calma y aprender de cada respuesta.',
+                    acceptable: 'Vas por buen camino. Con un poco mas de practica, tus resultados van a crecer.',
+                    strong: 'Muy buen trabajo: pensaste con orden y resolviste muchos retos correctamente.',
+                    excellent: 'Excelente mision: tu concentracion y tu razonamiento brillaron en cada reto.'
+                }
+            };
+
+            return (messages[selectedAnimal] || messages.Explorador)[scoreBand];
+        }
+
+        function updateEmpCannonStatus(percent) {
+            const energyFill = document.getElementById('emp-energy-fill');
+            const energyLabel = document.getElementById('emp-energy-label');
+            const statusMessage = document.getElementById('emp-status-message');
+            const teamName = getPilotTeamName(appState.user?.animal);
+
+            energyFill.style.width = `${percent}%`;
+            energyLabel.textContent = `${percent}%`;
+
+            if (percent === 100) {
+                statusMessage.innerHTML = `<span class="text-neonGreen font-bold">${teamName} logro energia completa.</span> Pulso EMP lanzado: las naves extraterrestres pierden sus sistemas y se retiran. Amenaza alien derrotada.`;
+            } else {
+                const missing = 100 - percent;
+                statusMessage.innerHTML = `<span class="text-yellow-300 font-bold">${teamName} cargo el canon al ${percent}%.</span> Faltan ${missing}% de energia: repite misiones y busca respuestas perfectas para lanzar el pulso EMP final.`;
+            }
+        }
+
+        function calculateFinalResults() {
+            const maxXP = appState.missions.reduce((sum, m) => sum + m.maxScore, 0);
+            const totalXP = appState.missions.reduce((sum, m) => sum + m.score, 0);
+            const percent = Math.round((totalXP / maxXP) * 100) || 0;
+
+            document.getElementById('final-xp').textContent = totalXP;
+            document.getElementById('max-xp').textContent = maxXP;
+
+            const percentText = document.getElementById('final-score-percent');
+            let current = 0;
+            const interval = setInterval(() => {
+                if (current >= percent) {
+                    clearInterval(interval);
+                    percentText.textContent = `${percent}%`;
+                } else {
+                    current++;
+                    percentText.textContent = `${current}%`;
+                }
+            }, 20);
+
+            const circle = document.getElementById('score-circle');
+            const circumference = 2 * Math.PI * 56;
+            const offset = circumference - (percent / 100) * circumference;
+            setTimeout(() => {
+                circle.style.strokeDashoffset = offset;
+            }, 100);
+
+            const classEl = document.getElementById('final-classification');
+            if (percent < 60) {
+                classEl.textContent = "EN PRACTICA";
+                classEl.className = "font-cyber text-2xl tracking-widest text-red-500";
+                circle.style.stroke = "#ff2a2a";
+            } else if (percent < 70) {
+                classEl.textContent = "ACEPTABLE";
+                classEl.className = "font-cyber text-2xl tracking-widest text-yellow-500";
+                circle.style.stroke = "#ffcc00";
+            } else if (percent < 90) {
+                classEl.textContent = "SOBRESALIENTE";
+                classEl.className = "font-cyber text-2xl tracking-widest text-neonCyan";
+                circle.style.stroke = "#00e5ff";
+            } else {
+                classEl.textContent = "EXCELENTE";
+                classEl.className = "font-cyber text-2xl tracking-widest text-neonGreen font-bold";
+                circle.style.stroke = "#00ff66";
+            }
+
+            const mins = Math.floor(appState.totalTimeSeconds / 60).toString().padStart(2, '0');
+            const secs = (appState.totalTimeSeconds % 60).toString().padStart(2, '0');
+            document.getElementById('final-time').textContent = `${mins}:${secs}`;
+
+            const completed = appState.missions.filter(m => m.completed).length;
+            document.getElementById('final-missions-count').textContent = `${completed}/${appState.missions.length}`;
+
+            updateEmpCannonStatus(percent);
+            document.getElementById('final-animal-message').textContent = getAnimalMotivationalMessage(appState.user?.animal, percent);
+        }
+
+        function generatePDF() {
+            if (!window.jspdf) {
+                showCustomModal("ERROR", "La libreria de PDF no cargo correctamente.", hideCustomModal, false);
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const bgColor = [10, 10, 15];
+            const cyan = [0, 229, 255];
+            const purple = [188, 19, 254];
+            const white = [255, 255, 255];
+            const gray = [150, 150, 150];
+
+            doc.setFillColor(bgColor[0], bgColor[1], bgColor[2]);
+            doc.rect(0, 0, 210, 297, 'F');
+
+            doc.setDrawColor(cyan[0], cyan[1], cyan[2]);
+            doc.setLineWidth(1);
+            doc.rect(10, 10, 190, 277, 'S');
+            doc.setDrawColor(purple[0], purple[1], purple[2]);
+            doc.setLineWidth(0.5);
+            doc.rect(12, 12, 186, 273, 'S');
+
+            doc.setTextColor(cyan[0], cyan[1], cyan[2]);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(22);
+            doc.text("MATH ACADEMY REPORT", 105, 30, { align: "center" });
+
+            doc.setFontSize(10);
+            doc.setTextColor(gray[0], gray[1], gray[2]);
+            doc.text("REPORTE DE RETOS MATEMATICOS // NIVEL PRIMARIA", 105, 38, { align: "center" });
+            doc.line(20, 45, 190, 45);
+
+            doc.setTextColor(white[0], white[1], white[2]);
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+
+            const startY = 55;
+            doc.text(`OPERADOR: ${appState.user.name}`, 20, startY);
+            doc.text(`ESCUADRON: ${getPilotTeamName(appState.user.animal)}`, 20, startY + 8);
+            doc.text(`SALON: ${appState.user.squad}`, 20, startY + 16);
+
+            const now = new Date();
+            doc.text(`FECHA: ${now.toLocaleDateString()} ${now.toLocaleTimeString()}`, 110, startY);
+
+            const mins = Math.floor(appState.totalTimeSeconds / 60);
+            const secs = appState.totalTimeSeconds % 60;
+            doc.text(`TIEMPO EN MISION: ${mins}m ${secs}s`, 110, startY + 8);
+
+            doc.setTextColor(purple[0], purple[1], purple[2]);
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.text("[ RESULTADOS DE MISION ]", 20, startY + 35);
+
+            let missionY = startY + 45;
+            doc.setFontSize(10);
+            appState.missions.forEach((mission, index) => {
+                const missionPercent = Math.round((mission.score / mission.maxScore) * 100) || 0;
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(cyan[0], cyan[1], cyan[2]);
+                doc.text(`> Mision ${index + 1}: ${mission.title}`, 25, missionY);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(white[0], white[1], white[2]);
+                doc.text(`${mission.score}/${mission.maxScore} XP (${missionPercent}%)`, 130, missionY);
+                missionY += 8;
+            });
+
+            missionY += 10;
+            const maxXP = appState.missions.reduce((sum, m) => sum + m.maxScore, 0);
+            const totalXP = appState.missions.reduce((sum, m) => sum + m.score, 0);
+            const percent = Math.round((totalXP / maxXP) * 100) || 0;
+
+            let classText = "EN PRACTICA";
+            if (percent >= 60) classText = "ACEPTABLE";
+            if (percent >= 70) classText = "SOBRESALIENTE";
+            if (percent >= 90) classText = "EXCELENTE";
+
+            doc.setDrawColor(cyan[0], cyan[1], cyan[2]);
+            doc.setFillColor(20, 20, 30);
+            doc.rect(20, missionY, 170, 30, 'FD');
+
+            doc.setFontSize(14);
+            doc.setTextColor(white[0], white[1], white[2]);
+            doc.text(`ENERGIA EMP: ${percent}% // ${totalXP} XP`, 30, missionY + 12);
+            doc.setTextColor(purple[0], purple[1], purple[2]);
+            doc.text(`CLASIFICACION: ${classText}`, 30, missionY + 22);
+
+            missionY += 45;
+            doc.setTextColor(cyan[0], cyan[1], cyan[2]);
+            doc.setFontSize(14);
+            doc.text("[ ANALISIS DE SISTEMA ]", 20, missionY);
+
+            doc.setTextColor(gray[0], gray[1], gray[2]);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "italic");
+
+            let observation = "";
+            if (percent < 60) observation = "Sigue practicando. Revisa las operaciones basicas y resuelve los problemas paso a paso.";
+            else if (percent < 70) observation = "Buen avance. Puedes mejorar repasando fracciones, medicion y patrones.";
+            else if (percent < 90) observation = "Muy buen desempeno. Demuestras comprension solida de los retos matematicos.";
+            else if (percent < 100) observation = "Excelente resultado. Tu razonamiento matematico esta muy bien entrenado.";
+            else observation = "Energia completa. El canon EMP fue lanzado y la amenaza alien fue derrotada.";
+
+            doc.text(observation, 25, missionY + 10, { maxWidth: 160 });
+
+            missionY += 30;
+            const motivationalMessage = getAnimalMotivationalMessage(appState.user?.animal, percent);
+            doc.setTextColor(cyan[0], cyan[1], cyan[2]);
+            doc.setFontSize(11);
+            doc.setFont("helvetica", "bold");
+            doc.text("[ ESPIRITU DEL ANIMAL ]", 20, missionY);
+
+            doc.setTextColor(white[0], white[1], white[2]);
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.text(motivationalMessage, 25, missionY + 8, { maxWidth: 160 });
+
+            doc.setDrawColor(purple[0], purple[1], purple[2]);
+            doc.setFontSize(6);
+            doc.text("SYS-HASH: " + Math.random().toString(36).substring(2, 15).toUpperCase(), 105, 282, { align: "center" });
+
+            doc.save(`Reporte_Math_${appState.user.squad}_${appState.user.animal || 'Animal'}.pdf`);
+            playSynthSound('success');
+        }
+
+        function confirmReset() {
+            showCustomModal(
+                "ADVERTENCIA CRITICA",
+                "Confirmas el borrado de la base de datos local? Esto eliminara todo tu progreso, XP y reportes actuales.",
+                executeReset,
+                true
+            );
+        }
+
+        function executeReset() {
+            localStorage.removeItem('mathCyberAcademyState');
+            location.reload();
+        }
+
+        function confirmProgressReset() {
+            showCustomModal(
+                "REINICIAR PROGRESO",
+                "Esto pondra el XP en 0, bloqueara nuevamente las misiones pendientes, borrara tiempos y eliminara el historial de respuestas. Tus datos de operador se conservaran.",
+                executeProgressReset,
+                true
+            );
+        }
+
+        function executeProgressReset() {
+            clearInterval(appState.timerInterval);
+            appState.missions = createFreshMissions();
+            appState.currentMissionId = null;
+            appState.currentMissionQuestions = [];
+            appState.currentQuestionIdx = 0;
+            appState.missionScore = 0;
+            appState.missionTimer = 0;
+            appState.missionDuration = 0;
+            appState.totalTimeSeconds = 0;
+            appState.answerHistory = [];
+            appState.questionBankVersion = QUESTION_BANK_VERSION;
+            saveState();
+            hideCustomModal();
+            renderDashboard();
+            updateGlobalHUD();
+            showScreen('dashboard-screen');
+        }
+
+        function showCustomModal(title, message, onConfirm, showCancel = true) {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+
+            const btnContainer = document.getElementById('modal-buttons');
+            btnContainer.innerHTML = '';
+
+            if (showCancel) {
+                const btnCancel = document.createElement('button');
+                btnCancel.className = 'cyber-btn px-4 py-2 border-gray-500 text-gray-400 hover:text-white hover:bg-gray-800 text-xs rounded';
+                btnCancel.textContent = 'CANCELAR';
+                btnCancel.onclick = hideCustomModal;
+                btnContainer.appendChild(btnCancel);
+            }
+
+            const btnConfirm = document.createElement('button');
+            btnConfirm.className = 'cyber-btn px-4 py-2 border-neonRed text-neonRed hover:bg-neonRed hover:text-white text-xs rounded';
+            btnConfirm.textContent = showCancel ? 'CONFIRMAR' : 'ENTENDIDO';
+            btnConfirm.onclick = onConfirm;
+            btnContainer.appendChild(btnConfirm);
+
+            document.getElementById('custom-modal-overlay').classList.add('active');
+            playSynthSound('error');
+        }
+
+        function hideCustomModal() {
+            document.getElementById('custom-modal-overlay').classList.remove('active');
+        }
+
+        function initParticles() {
+            const canvas = document.getElementById('particles-canvas');
+            const ctx = canvas.getContext('2d');
+            const particles = [];
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedY = Math.random() * 1 + 0.1;
+                    this.opacity = Math.random() * 0.5 + 0.1;
+                    this.color = Math.random() > 0.5 ? `rgba(0, 229, 255, ${this.opacity})` : `rgba(188, 19, 254, ${this.opacity})`;
+                }
+
+                update() {
+                    this.y -= this.speedY;
+                    if (this.y < 0) {
+                        this.y = canvas.height;
+                        this.x = Math.random() * canvas.width;
+                    }
+                }
+
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            for (let i = 0; i < 100; i++) {
+                particles.push(new Particle());
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach(particle => {
+                    particle.update();
+                    particle.draw();
+                });
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+    </script>
+</body>
+</html>
