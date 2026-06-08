@@ -175,6 +175,51 @@
             bottom: 68px;
         }
 
+        .developer-contact {
+            position: fixed;
+            left: 18px;
+            bottom: 18px;
+            z-index: 40;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 42px;
+            max-width: min(280px, calc(100vw - 150px));
+            padding: 10px 14px;
+            border: 1px solid rgba(188, 19, 254, 0.52);
+            border-radius: 999px;
+            color: #f5d0fe;
+            background: rgba(5, 5, 10, 0.84);
+            box-shadow: 0 0 18px rgba(188, 19, 254, 0.18);
+            backdrop-filter: blur(12px);
+            text-decoration: none;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+        }
+
+        .developer-contact:hover,
+        .developer-contact:focus-visible {
+            color: #ffffff;
+            border-color: rgba(188, 19, 254, 0.82);
+            box-shadow: 0 0 24px rgba(188, 19, 254, 0.32);
+            transform: translateY(-1px);
+            outline: none;
+        }
+
+        .developer-contact i {
+            flex: 0 0 auto;
+            width: 16px;
+            text-align: center;
+            color: #00e5ff;
+        }
+
+        .developer-contact span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
         .neon-border-cyan {
             border-color: rgba(0, 229, 255, 0.55);
         }
@@ -315,6 +360,11 @@
         <i class="fas fa-language"></i>
         <span>ES</span>
     </button>
+
+    <a id="developer-contact" class="developer-contact font-cyber text-[11px] tracking-wider" href="mailto:ramesco@gmail.com" title="Contactar al desarrollador">
+        <i class="fas fa-envelope"></i>
+        <span>Desarrollador: Contacto</span>
+    </a>
 
     <div id="custom-modal-overlay">
         <div class="glass-panel p-6 max-w-md w-full text-center border-t-4 border-t-neonRed rounded-lg">
@@ -998,6 +1048,8 @@
                 ambientOff: 'MÚSICA OFF',
                 ambientReady: 'MÚSICA LISTA',
                 ambientOn: 'MÚSICA ON',
+                developerContact: 'Desarrollador: Contacto',
+                developerContactTitle: 'Contactar al desarrollador',
                 loginSubtitle: 'ACADEMIA DE RETOS MATEMÁTICOS v2.0',
                 scientistLabel: 'IDENTIFICACIÓN DE CIENTÍFICO (Nombres y Apellidos)',
                 scientistPlaceholder: 'Ej: Ada Lovelace',
@@ -1066,6 +1118,8 @@
                 ambientOff: 'MUSIC OFF',
                 ambientReady: 'MUSIC READY',
                 ambientOn: 'MUSIC ON',
+                developerContact: 'Developer: Contact',
+                developerContactTitle: 'Contact the developer',
                 loginSubtitle: 'MATH CHALLENGE ACADEMY v2.0',
                 scientistLabel: 'SCIENTIST ID (First and Last Name)',
                 scientistPlaceholder: 'Ex: Ada Lovelace',
@@ -1288,6 +1342,12 @@
             document.documentElement.lang = lang;
             const languageToggle = document.getElementById('language-toggle');
             if (languageToggle) languageToggle.querySelector('span').textContent = lang.toUpperCase();
+            const developerContact = document.getElementById('developer-contact');
+            if (developerContact) {
+                developerContact.querySelector('span').textContent = tr('developerContact');
+                developerContact.title = tr('developerContactTitle');
+                developerContact.setAttribute('aria-label', tr('developerContactTitle'));
+            }
 
             setText('#login-screen .text-center p', tr('loginSubtitle'));
             setText('label[for="input-name"]', tr('scientistLabel'));
