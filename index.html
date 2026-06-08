@@ -171,6 +171,10 @@
             text-align: center;
         }
 
+        .language-toggle {
+            bottom: 68px;
+        }
+
         .neon-border-cyan {
             border-color: rgba(0, 229, 255, 0.55);
         }
@@ -305,6 +309,11 @@
     <button id="ambient-toggle" class="ambient-toggle font-cyber text-[11px] tracking-wider" type="button" aria-pressed="false" title="Activar o desactivar sonido ambiente">
         <i class="fas fa-volume-xmark"></i>
         <span>AMBIENTE OFF</span>
+    </button>
+
+    <button id="language-toggle" class="ambient-toggle language-toggle font-cyber text-[11px] tracking-wider" type="button" title="Cambiar idioma">
+        <i class="fas fa-language"></i>
+        <span>ES</span>
     </button>
 
     <div id="custom-modal-overlay">
@@ -647,13 +656,13 @@
             const label = toggle.querySelector('span');
             if (ambientState.enabled && ambientState.running) {
                 icon.className = 'fas fa-music';
-                label.textContent = 'MUSICA ON';
+                label.textContent = tr('ambientOn');
             } else if (ambientState.enabled) {
                 icon.className = 'fas fa-music';
-                label.textContent = 'MUSICA LISTA';
+                label.textContent = tr('ambientReady');
             } else {
                 icon.className = 'fas fa-volume-xmark';
-                label.textContent = 'MUSICA OFF';
+                label.textContent = tr('ambientOff');
             }
         }
 
@@ -983,6 +992,163 @@
         ];
 
         const QUESTION_BANK_VERSION = 'math-bank-2026-06-07-v3-special';
+        const DEFAULT_LANGUAGE = localStorage.getItem('mathCyberLanguage') || 'es';
+        const UI_TEXT = {
+            es: {
+                ambientOff: 'MUSICA OFF',
+                ambientReady: 'MUSICA LISTA',
+                ambientOn: 'MUSICA ON',
+                loginSubtitle: 'ACADEMIA DE RETOS MATEMATICOS v2.0',
+                scientistLabel: 'IDENTIFICACION DE CIENTIFICO (Nombres y Apellidos)',
+                scientistPlaceholder: 'Ej: Ada Lovelace',
+                nameError: 'Solo letras, maximo 3 espacios.',
+                animalLabel: 'ANIMAL DEL ESCUADRON DE PILOTOS',
+                animalPlaceholder: 'Seleccione el simbolo del Team...',
+                classroomLabel: 'CODIGO DEL SALON',
+                classroomPlaceholder: 'Ej: 5A2026',
+                classroomError: 'Hasta 10 caracteres alfanumericos: numeros del grado y letra mayuscula.',
+                startMission: 'INICIAR MISION',
+                spaceTransmission: 'TRANSMISION DEL COMANDO ESPACIAL',
+                introDefaultGreeting: 'Genio, te estabamos esperando.',
+                introDefaultCopy: 'Un comando de naves extraterrestres se acerca a la Tierra. Solo un genio matematico puede descifrar los retos y cargar el canon de pulso electromagnetico.',
+                assignedSquad: 'ESCUADRON ASIGNADO',
+                introEnergy: 'Tus respuestas correctas llenaran la energia del canon EMP. Solo con el 100% de energia el pulso podra lanzarse y la amenaza alien sera derrotada.',
+                acceptMission: 'ACEPTAR MISION',
+                scientist: 'CIENTIFICO',
+                team: 'TEAM',
+                classroom: 'SALON',
+                rank: 'RANGO',
+                accumulatedEnergy: 'ENERGIA ACUMULADA',
+                report: 'INFORME',
+                resetProgress: 'PROGRESO 0',
+                restart: 'REINICIAR',
+                dashboardTitle: 'PANEL DE DEFENSA MATEMATICA',
+                dashboardSubtitle: 'Descifra los retos para cargar el canon EMP y proteger la Tierra de la amenaza alien.',
+                score: 'PUNTAJE',
+                difficulty: 'DIF',
+                completed: 'COMPLETADA',
+                repeatMission: 'REPETIR MISION',
+                available: 'DISPONIBLE',
+                startSequence: 'INICIAR SECUENCIA',
+                progress: 'Progreso',
+                loadingQuestion: 'Cargando datos de simulacion...',
+                abort: 'Abortar',
+                instanceId: 'ID de Instancia',
+                empTitle: 'ENERGIA EMP CALCULADA',
+                empSubtitle: 'El porcentaje de respuestas correctas carga el canon de pulso electromagnetico',
+                totalXp: 'PUNTAJE TOTAL XP',
+                totalTime: 'TIEMPO TOTAL',
+                completedMissions: 'MISIONES COMPLETADAS',
+                empCannon: 'CANON DE PULSO ELECTROMAGNETICO',
+                animalSpirit: 'ESPIRITU DEL ANIMAL',
+                calculating: 'Calculando...',
+                calculatingEnergy: 'Calculando energia del canon...',
+                backPanel: 'VOLVER AL PANEL',
+                generatePdf: 'GENERAR PDF',
+                correct: 'RESPUESTA CORRECTA',
+                incorrect: 'REVISA EL CALCULO',
+                timeout: 'TIEMPO AGOTADO',
+                noLimit: 'SIN LIMITE',
+                matchingLeft: 'MULTIPLICACIONES',
+                matchingRight: 'RESULTADOS',
+                pairCorrect: 'PAREJA CORRECTA',
+                tryAnother: 'INTENTA OTRA PAREJA',
+                tableComplete: 'TABLA COMPLETA',
+                cancel: 'CANCELAR',
+                confirm: 'CONFIRMAR',
+                understood: 'ENTENDIDO',
+                trueText: 'Verdadero',
+                falseText: 'Falso',
+                ranks: ['NOVATO', 'APRENDIZ', 'EXPLORADOR', 'MAESTRO MATH'],
+                classifications: ['EN PRACTICA', 'ACEPTABLE', 'SOBRESALIENTE', 'EXCELENTE']
+            },
+            en: {
+                ambientOff: 'MUSIC OFF',
+                ambientReady: 'MUSIC READY',
+                ambientOn: 'MUSIC ON',
+                loginSubtitle: 'MATH CHALLENGE ACADEMY v2.0',
+                scientistLabel: 'SCIENTIST ID (First and Last Name)',
+                scientistPlaceholder: 'Ex: Ada Lovelace',
+                nameError: 'Letters only, maximum 3 spaces.',
+                animalLabel: 'PILOT SQUADRON ANIMAL',
+                animalPlaceholder: 'Choose the Team symbol...',
+                classroomLabel: 'CLASSROOM CODE',
+                classroomPlaceholder: 'Ex: 5A2026',
+                classroomError: 'Up to 10 alphanumeric characters: grade numbers and uppercase letter.',
+                startMission: 'START MISSION',
+                spaceTransmission: 'SPACE COMMAND TRANSMISSION',
+                introDefaultGreeting: 'Genius, we were waiting for you.',
+                introDefaultCopy: 'An alien fleet is approaching Earth. Only a math genius can decode the challenges and charge the electromagnetic pulse cannon.',
+                assignedSquad: 'ASSIGNED SQUADRON',
+                introEnergy: 'Your correct answers will fill the EMP cannon energy. Only at 100% can the pulse be launched and the alien threat defeated.',
+                acceptMission: 'ACCEPT MISSION',
+                scientist: 'SCIENTIST',
+                team: 'TEAM',
+                classroom: 'CLASS',
+                rank: 'RANK',
+                accumulatedEnergy: 'ACCUMULATED ENERGY',
+                report: 'REPORT',
+                resetProgress: 'PROGRESS 0',
+                restart: 'RESTART',
+                dashboardTitle: 'MATH DEFENSE PANEL',
+                dashboardSubtitle: 'Decode the challenges to charge the EMP cannon and protect Earth from the alien threat.',
+                score: 'SCORE',
+                difficulty: 'DIF',
+                completed: 'COMPLETED',
+                repeatMission: 'REPEAT MISSION',
+                available: 'AVAILABLE',
+                startSequence: 'START SEQUENCE',
+                progress: 'Progress',
+                loadingQuestion: 'Loading simulation data...',
+                abort: 'Abort',
+                instanceId: 'Instance ID',
+                empTitle: 'EMP ENERGY CALCULATED',
+                empSubtitle: 'The percentage of correct answers charges the electromagnetic pulse cannon',
+                totalXp: 'TOTAL XP SCORE',
+                totalTime: 'TOTAL TIME',
+                completedMissions: 'COMPLETED MISSIONS',
+                empCannon: 'ELECTROMAGNETIC PULSE CANNON',
+                animalSpirit: 'ANIMAL SPIRIT',
+                calculating: 'Calculating...',
+                calculatingEnergy: 'Calculating cannon energy...',
+                backPanel: 'BACK TO PANEL',
+                generatePdf: 'GENERATE PDF',
+                correct: 'CORRECT ANSWER',
+                incorrect: 'CHECK THE CALCULATION',
+                timeout: 'TIME IS UP',
+                noLimit: 'NO LIMIT',
+                matchingLeft: 'MULTIPLICATIONS',
+                matchingRight: 'RESULTS',
+                pairCorrect: 'CORRECT PAIR',
+                tryAnother: 'TRY ANOTHER PAIR',
+                tableComplete: 'TABLE COMPLETE',
+                cancel: 'CANCEL',
+                confirm: 'CONFIRM',
+                understood: 'GOT IT',
+                trueText: 'True',
+                falseText: 'False',
+                ranks: ['ROOKIE', 'APPRENTICE', 'EXPLORER', 'MATH MASTER'],
+                classifications: ['IN PRACTICE', 'ACCEPTABLE', 'OUTSTANDING', 'EXCELLENT']
+            }
+        };
+        const ANIMAL_LABELS = {
+            es: { Leon: 'Leon', Tigre: 'Tigre', Aguila: 'Aguila', Delfin: 'Delfin', Gato: 'Gato', Perro: 'Perro', Conejo: 'Conejo', Explorador: 'Explorador' },
+            en: { Leon: 'Lion', Tigre: 'Tiger', Aguila: 'Eagle', Delfin: 'Dolphin', Gato: 'Cat', Perro: 'Dog', Conejo: 'Rabbit', Explorador: 'Explorer' }
+        };
+        const MISSION_TEXT = {
+            es: {},
+            en: {
+                m1: { topic: 'ADDITION WORD PROBLEMS', title: 'The Reward Store', desc: 'Solve everyday situations using addition.', difficulty: 'Low' },
+                m2: { topic: 'SUBTRACTION WORD PROBLEMS', title: 'The Missing Inventory', desc: 'Find what remains or what is missing using subtraction.', difficulty: 'Low' },
+                m3: { topic: 'MULTIPLICATION WORD PROBLEMS', title: 'Energy Packages', desc: 'Use multiplication when there are equal groups.', difficulty: 'Medium' },
+                m4: { topic: 'DIVISION WORD PROBLEMS', title: 'Fair Sharing', desc: 'Share quantities equally using division.', difficulty: 'Medium' },
+                m5: { topic: 'FRACTIONS', title: 'Fraction Pizza', desc: 'Recognize parts of a whole and compare simple fractions.', difficulty: 'Medium' },
+                m6: { topic: 'SEQUENCES AND PATTERNS', title: 'Secret Number Code', desc: 'Find rules and complete number patterns.', difficulty: 'Medium' },
+                m7: { topic: 'MEASUREMENT', title: 'Measurement Lab', desc: 'Use length, mass, time, and capacity units.', difficulty: 'Medium' },
+                m8: { topic: 'PROBABILITY', title: 'Possibility Challenge', desc: 'Think about how likely a result is.', difficulty: 'High' },
+                m9: { topic: 'SPECIAL MISSION', title: 'Lightning Tables', desc: 'Match multiplication facts with their products to review the 6, 7, and 8 tables. No time limit.', difficulty: 'Special' }
+            }
+        };
 
         let appState = {
             user: null,
@@ -996,6 +1162,7 @@
             timerInterval: null,
             totalTimeSeconds: 0,
             answerHistory: [],
+            language: DEFAULT_LANGUAGE,
             questionBankVersion: QUESTION_BANK_VERSION
         };
         const MISSION_SECONDS_PER_QUESTION = 45;
@@ -1003,8 +1170,10 @@
         window.onload = () => {
             initParticles();
             setupAmbientToggle();
+            setupLanguageToggle();
             loadState();
             setupFormListeners();
+            applyLanguage();
 
             if (appState.user) {
                 showScreen('dashboard-screen');
@@ -1049,7 +1218,7 @@
                     return;
                 }
 
-                appState = { ...appState, ...parsedState, questionBankVersion: QUESTION_BANK_VERSION, timerInterval: null };
+                appState = { ...appState, ...parsedState, language: parsedState.language || DEFAULT_LANGUAGE, questionBankVersion: QUESTION_BANK_VERSION, timerInterval: null };
                 appState.answerHistory = appState.answerHistory || [];
                 const savedMissions = appState.missions || [];
                 appState.missions = MISSIONS_DATA.map((mission, index) => {
@@ -1068,6 +1237,134 @@
             }
         }
 
+        function getLang() {
+            return appState.language || DEFAULT_LANGUAGE || 'es';
+        }
+
+        function tr(key) {
+            return UI_TEXT[getLang()][key] ?? UI_TEXT.es[key] ?? key;
+        }
+
+        function tfOptions() {
+            return [tr('trueText'), tr('falseText')];
+        }
+
+        function getAnimalLabel(animal) {
+            return ANIMAL_LABELS[getLang()][animal] || ANIMAL_LABELS[getLang()].Explorador;
+        }
+
+        function getMissionText(mission, key) {
+            return MISSION_TEXT[getLang()]?.[mission.id]?.[key] || mission[key];
+        }
+
+        function setupLanguageToggle() {
+            const toggle = document.getElementById('language-toggle');
+            if (!toggle) return;
+            toggle.addEventListener('click', () => {
+                appState.language = getLang() === 'es' ? 'en' : 'es';
+                localStorage.setItem('mathCyberLanguage', appState.language);
+                saveState();
+                applyLanguage();
+                if (document.getElementById('dashboard-screen').classList.contains('active')) {
+                    renderDashboard();
+                    updateGlobalHUD();
+                }
+                if (document.getElementById('intro-screen').classList.contains('active')) {
+                    showIntroScreen();
+                }
+                if (document.getElementById('results-screen').classList.contains('active')) {
+                    calculateFinalResults();
+                }
+            });
+        }
+
+        function setText(selector, text) {
+            const element = document.querySelector(selector);
+            if (element) element.textContent = text;
+        }
+
+        function applyLanguage() {
+            const lang = getLang();
+            document.documentElement.lang = lang;
+            const languageToggle = document.getElementById('language-toggle');
+            if (languageToggle) languageToggle.querySelector('span').textContent = lang.toUpperCase();
+
+            setText('#login-screen .text-center p', tr('loginSubtitle'));
+            setText('label[for="input-name"]', tr('scientistLabel'));
+            const nameLabel = document.querySelector('#input-name')?.closest('div')?.parentElement?.querySelector('label');
+            if (nameLabel) nameLabel.textContent = tr('scientistLabel');
+            const nameInput = document.getElementById('input-name');
+            if (nameInput) nameInput.placeholder = tr('scientistPlaceholder');
+            setText('#err-name', tr('nameError'));
+
+            const animalLabel = document.getElementById('input-animal')?.closest('div')?.parentElement?.querySelector('label');
+            if (animalLabel) animalLabel.textContent = tr('animalLabel');
+            const animalSelect = document.getElementById('input-animal');
+            if (animalSelect) {
+                animalSelect.options[0].textContent = tr('animalPlaceholder');
+                [...animalSelect.options].forEach(option => {
+                    if (option.value) option.textContent = getAnimalLabel(option.value);
+                });
+            }
+
+            const squadLabel = document.getElementById('input-squad')?.closest('div')?.parentElement?.querySelector('label');
+            if (squadLabel) squadLabel.textContent = tr('classroomLabel');
+            const squadInput = document.getElementById('input-squad');
+            if (squadInput) squadInput.placeholder = tr('classroomPlaceholder');
+            setText('#err-squad', tr('classroomError'));
+            document.getElementById('btn-login').lastChild.textContent = ` ${tr('startMission')}`;
+
+            setText('#intro-screen .manga-bubble p:first-child', tr('spaceTransmission'));
+            setText('#intro-screen .manga-bubble h1', tr('introDefaultGreeting'));
+            setText('#intro-screen .manga-bubble #intro-copy', tr('introDefaultCopy'));
+            setText('#intro-screen .glass-panel span', tr('assignedSquad'));
+            const introEnergy = document.querySelector('#intro-team')?.nextElementSibling;
+            if (introEnergy) introEnergy.textContent = tr('introEnergy');
+            const acceptButton = document.querySelector('#intro-screen button');
+            if (acceptButton) acceptButton.lastChild.textContent = ` ${tr('acceptMission')}`;
+
+            setText('#hud-name', tr('scientist'));
+            setText('#dashboard-screen .text-center p', tr('dashboardSubtitle'));
+            const dashboardTitle = document.querySelector('#dashboard-screen .text-center h2');
+            if (dashboardTitle) dashboardTitle.innerHTML = `<i class="fas fa-satellite"></i> ${tr('dashboardTitle')}`;
+            setText('#dashboard-screen .text-center .text-\\[10px\\]', tr('accumulatedEnergy'));
+
+            const progressLabel = document.querySelector('#mission-screen .text-right span.text-xs');
+            if (progressLabel) progressLabel.innerHTML = `${tr('progress')}: <span id="mission-progress-text">${document.getElementById('mission-progress-text')?.textContent || '1/5'}</span>`;
+            const abortButton = document.querySelector('button[onclick="abortMission()"]');
+            if (abortButton) abortButton.innerHTML = `<i class="fas fa-times-circle"></i> ${tr('abort')}`;
+            const instanceLabel = document.querySelector('#instance-id')?.parentElement;
+            if (instanceLabel) instanceLabel.innerHTML = `${tr('instanceId')}: <span id="instance-id">${document.getElementById('instance-id')?.textContent || ''}</span>`;
+
+            const reportButton = document.getElementById('btn-ver-informe');
+            if (reportButton) reportButton.innerHTML = `<i class="fas fa-file-pdf"></i> ${tr('report')}`;
+            const progressResetButton = document.querySelector('button[onclick="confirmProgressReset()"]');
+            if (progressResetButton) progressResetButton.innerHTML = `<i class="fas fa-eraser"></i> ${tr('resetProgress')}`;
+            const resetButton = document.querySelector('button[onclick="confirmReset()"]');
+            if (resetButton) resetButton.innerHTML = `<i class="fas fa-redo"></i> ${tr('restart')}`;
+
+            const resultTitle = document.querySelector('#results-screen h1');
+            if (resultTitle) resultTitle.textContent = tr('empTitle');
+            const resultSubtitle = document.querySelector('#results-screen > div > p');
+            if (resultSubtitle) resultSubtitle.textContent = tr('empSubtitle');
+            setText('#results-screen .border-neonPurple p', tr('animalSpirit'));
+            const empTitle = document.querySelector('#emp-energy-label')?.previousElementSibling;
+            if (empTitle) empTitle.textContent = tr('empCannon');
+            const empMessage = document.getElementById('emp-status-message');
+            if (empMessage && empMessage.textContent.includes('Calcul')) empMessage.textContent = tr('calculatingEnergy');
+
+            const statLabels = document.querySelectorAll('#results-screen .text-xs.text-gray-400.font-cyber');
+            if (statLabels[0]) statLabels[0].textContent = tr('totalXp');
+            if (statLabels[1]) statLabels[1].textContent = tr('totalTime');
+            if (statLabels[2]) statLabels[2].textContent = tr('completedMissions');
+            const backButton = [...document.querySelectorAll('button')].find(button => button.getAttribute('onclick') === "showScreen('dashboard-screen')");
+            if (backButton) backButton.innerHTML = `<i class="fas fa-arrow-left"></i> ${tr('backPanel')}`;
+            const pdfButton = document.querySelector('button[onclick="generatePDF()"]');
+            if (pdfButton) pdfButton.innerHTML = `<i class="fas fa-file-pdf"></i> ${tr('generatePdf')}`;
+
+            updateAmbientToggle();
+        }
+
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById(screenId).classList.add('active');
@@ -1075,14 +1372,18 @@
         }
 
         function getPilotTeamName(animal) {
-            return `Team ${animal || 'Explorador'}`;
+            return `Team ${getAnimalLabel(animal || 'Explorador')}`;
         }
 
         function showIntroScreen() {
             if (!appState.user) return;
-            document.getElementById('intro-greeting').textContent = `Genio ${appState.user.name}, el comando espacial te estaba esperando.`;
+            document.getElementById('intro-greeting').textContent = getLang() === 'en'
+                ? `Genius ${appState.user.name}, Space Command was waiting for you.`
+                : `Genio ${appState.user.name}, el comando espacial te estaba esperando.`;
             document.getElementById('intro-team').textContent = getPilotTeamName(appState.user.animal);
-            document.getElementById('intro-copy').textContent = `${getPilotTeamName(appState.user.animal)} queda bajo tu mando. Las naves alien preparan un ataque con pulso electromagnetico, pero tus retos matematicos pueden cargar nuestro canon EMP defensivo.`;
+            document.getElementById('intro-copy').textContent = getLang() === 'en'
+                ? `${getPilotTeamName(appState.user.animal)} is under your command. Alien ships are preparing an electromagnetic pulse attack, but your math challenges can charge our defensive EMP cannon.`
+                : `${getPilotTeamName(appState.user.animal)} queda bajo tu mando. Las naves alien preparan un ataque con pulso electromagnetico, pero tus retos matematicos pueden cargar nuestro canon EMP defensivo.`;
             showScreen('intro-screen');
         }
 
@@ -1178,16 +1479,18 @@
             if (!appState.user) return;
 
             document.getElementById('hud-name').textContent = appState.user.name;
-            document.getElementById('hud-team').textContent = getPilotTeamName(appState.user.animal).toUpperCase();
-            document.getElementById('hud-squad').textContent = appState.user.squad;
+            const hudMeta = document.querySelector('#hud-name + p');
+            if (hudMeta) {
+                hudMeta.innerHTML = `${tr('team')}: <span id="hud-team" class="text-neonPurple font-bold">${getPilotTeamName(appState.user.animal).toUpperCase()}</span> | ${tr('classroom')}: <span id="hud-squad" class="text-neonCyan font-bold">${appState.user.squad}</span> | ${tr('rank')}: <span id="hud-rank" class="text-white">${tr('ranks')[0]}</span>`;
+            }
 
             const totalXP = appState.missions.reduce((sum, m) => sum + (m.score || 0), 0);
             document.getElementById('hud-xp').textContent = totalXP;
 
-            let rank = "NOVATO";
-            if (totalXP > 200) rank = "APRENDIZ";
-            if (totalXP > 500) rank = "EXPLORADOR";
-            if (totalXP > 900) rank = "MAESTRO MATH";
+            let rank = tr('ranks')[0];
+            if (totalXP > 200) rank = tr('ranks')[1];
+            if (totalXP > 500) rank = tr('ranks')[2];
+            if (totalXP > 900) rank = tr('ranks')[3];
             document.getElementById('hud-rank').textContent = rank;
 
             const allCompleted = appState.missions.every(m => m.completed);
@@ -1211,13 +1514,13 @@
                 if (isCompleted) {
                     borderClass = 'border-neonGreen';
                     glowClass = 'shadow-[0_0_15px_rgba(0,255,102,0.2)]';
-                    statusBadge = '<span class="bg-green-900 text-neonGreen text-[10px] px-2 py-1 rounded border border-neonGreen"><i class="fas fa-check"></i> COMPLETADA</span>';
-                    btnHtml = `<button onclick="startMission('${m.id}')" class="cyber-btn w-full py-2 mt-4 text-sm border-neonGreen text-neonGreen hover:bg-neonGreen"><i class="fas fa-redo"></i> REPETIR MISION</button>`;
+                    statusBadge = `<span class="bg-green-900 text-neonGreen text-[10px] px-2 py-1 rounded border border-neonGreen"><i class="fas fa-check"></i> ${tr('completed')}</span>`;
+                    btnHtml = `<button onclick="startMission('${m.id}')" class="cyber-btn w-full py-2 mt-4 text-sm border-neonGreen text-neonGreen hover:bg-neonGreen"><i class="fas fa-redo"></i> ${tr('repeatMission')}</button>`;
                 } else {
                     borderClass = 'border-neonCyan';
                     glowClass = 'shadow-[0_0_15px_rgba(0,229,255,0.2)]';
-                    statusBadge = '<span class="bg-blue-900 text-neonCyan text-[10px] px-2 py-1 rounded border border-neonCyan animate-pulse"><i class="fas fa-unlock"></i> DISPONIBLE</span>';
-                    btnHtml = `<button onclick="startMission('${m.id}')" class="cyber-btn w-full py-2 mt-4 text-sm bg-neonCyan/10"><i class="fas fa-play"></i> INICIAR SECUENCIA</button>`;
+                    statusBadge = `<span class="bg-blue-900 text-neonCyan text-[10px] px-2 py-1 rounded border border-neonCyan animate-pulse"><i class="fas fa-unlock"></i> ${tr('available')}</span>`;
+                    btnHtml = `<button onclick="startMission('${m.id}')" class="cyber-btn w-full py-2 mt-4 text-sm bg-neonCyan/10"><i class="fas fa-play"></i> ${tr('startSequence')}</button>`;
                 }
 
                 const cardHTML = `
@@ -1228,13 +1531,13 @@
                             </div>
                             ${statusBadge}
                         </div>
-                        <h3 class="font-cyber text-lg text-white mb-1">${m.title}</h3>
-                        <p class="text-xs text-neonPurple font-bold mb-3 tracking-wider">${m.topic}</p>
-                        <p class="text-sm text-gray-400 mb-4 flex-grow">${m.desc}</p>
+                        <h3 class="font-cyber text-lg text-white mb-1">${getMissionText(m, 'title')}</h3>
+                        <p class="text-xs text-neonPurple font-bold mb-3 tracking-wider">${getMissionText(m, 'topic')}</p>
+                        <p class="text-sm text-gray-400 mb-4 flex-grow">${getMissionText(m, 'desc')}</p>
                         <div class="mt-auto">
                             <div class="flex justify-between text-xs text-gray-500 font-mono mb-1">
-                                <span>PUNTAJE: <span class="text-white">${m.score}/${m.maxScore} XP</span></span>
-                                <span>DIF: ${m.difficulty}</span>
+                                <span>${tr('score')}: <span class="text-white">${m.score}/${m.maxScore} XP</span></span>
+                                <span>${tr('difficulty')}: ${getMissionText(m, 'difficulty')}</span>
                             </div>
                             <div class="w-full bg-gray-800 h-1.5 rounded-full overflow-hidden">
                                 <div class="bg-gradient-to-r from-neonBlue to-neonCyan h-full" style="width: ${progressPercent}%"></div>
@@ -1281,7 +1584,7 @@
             const optionSet = new Set([answer, ...wrongOptions]);
             let guard = 0;
             while (optionSet.size < 4 && guard < 20) {
-                optionSet.add(`Opcion ${guard + 1}`);
+                optionSet.add(`${getLang() === 'en' ? 'Option' : 'Opcion'} ${guard + 1}`);
                 guard++;
             }
             const options = shuffleArray([...optionSet]).slice(0, 4);
@@ -1307,6 +1610,7 @@
         }
 
         function generateAdditionQuestions() {
+            const en = getLang() === 'en';
             const a1 = randomInt(12, 45);
             const b1 = randomInt(13, 49);
             const a2 = randomInt(90, 180);
@@ -1317,15 +1621,16 @@
             const b4 = randomInt(18, 70);
 
             return [
-                createNumericQuestion(`Lina tiene ${a1} cristales de energia y encuentra ${b1} mas. Cuantos cristales tiene ahora?`, a1 + b1, 50),
-                createNumericQuestion(`En la base espacial hay ${a2} robots reparando naves y llegan ${b2} robots nuevos. Cuantos robots hay en total?`, a2 + b2, 50),
-                { text: `Si juntas ${a3} puntos de una ronda y ${b3} puntos de otra, debes sumar para saber el total.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
-                createNumericQuestion(`El Team reunio ${a3} baterias y despues recibio ${b3} baterias extras. Cuantas baterias reunio?`, a3 + b3, 50),
-                createNumericQuestion(`Una nave cargo ${a4} unidades de energia azul y ${b4} de energia verde. Cuanta energia cargo en total?`, a4 + b4, 50)
+                createNumericQuestion(en ? `Lina has ${a1} energy crystals and finds ${b1} more. How many crystals does she have now?` : `Lina tiene ${a1} cristales de energia y encuentra ${b1} mas. Cuantos cristales tiene ahora?`, a1 + b1, 50),
+                createNumericQuestion(en ? `At the space base there are ${a2} robots repairing ships and ${b2} new robots arrive. How many robots are there in total?` : `En la base espacial hay ${a2} robots reparando naves y llegan ${b2} robots nuevos. Cuantos robots hay en total?`, a2 + b2, 50),
+                { text: en ? `If you combine ${a3} points from one round and ${b3} points from another, you add to find the total.` : `Si juntas ${a3} puntos de una ronda y ${b3} puntos de otra, debes sumar para saber el total.`, type: 'tf', options: tfOptions(), correct: 0, xp: 50 },
+                createNumericQuestion(en ? `The Team collected ${a3} batteries and then received ${b3} extra batteries. How many batteries did it collect?` : `El Team reunio ${a3} baterias y despues recibio ${b3} baterias extras. Cuantas baterias reunio?`, a3 + b3, 50),
+                createNumericQuestion(en ? `A ship loaded ${a4} blue energy units and ${b4} green energy units. How much energy did it load in total?` : `Una nave cargo ${a4} unidades de energia azul y ${b4} de energia verde. Cuanta energia cargo en total?`, a4 + b4, 50)
             ];
         }
 
         function generateSubtractionQuestions() {
+            const en = getLang() === 'en';
             const total1 = randomInt(70, 130);
             const spent1 = randomInt(20, 55);
             const total2 = randomInt(140, 240);
@@ -1336,15 +1641,16 @@
             const lost4 = randomInt(30, 90);
 
             return [
-                createNumericQuestion(`Tomas tenia ${total1} monedas galacticas y gasto ${spent1}. Cuantas monedas le quedan?`, total1 - spent1, 50),
-                createNumericQuestion(`Habia ${total2} drones en el hangar y despegaron ${used2}. Cuantos drones quedaron?`, total2 - used2, 50),
-                { text: `Si habia ${total3} escudos y ahora quedan ${left3}, para saber cuantos se usaron hacemos ${total3} - ${left3}.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
-                createNumericQuestion(`Una nave tenia ${total4} cargas de plasma y perdio ${lost4}. Cuantas cargas conserva?`, total4 - lost4, 50),
-                createNumericQuestion(`El laboratorio tenia ${total2} piezas y envio ${spent1} a reparacion. Cuantas piezas quedan?`, total2 - spent1, 50)
+                createNumericQuestion(en ? `Thomas had ${total1} galactic coins and spent ${spent1}. How many coins are left?` : `Tomas tenia ${total1} monedas galacticas y gasto ${spent1}. Cuantas monedas le quedan?`, total1 - spent1, 50),
+                createNumericQuestion(en ? `There were ${total2} drones in the hangar and ${used2} took off. How many drones remained?` : `Habia ${total2} drones en el hangar y despegaron ${used2}. Cuantos drones quedaron?`, total2 - used2, 50),
+                { text: en ? `If there were ${total3} shields and now ${left3} remain, to find how many were used we do ${total3} - ${left3}.` : `Si habia ${total3} escudos y ahora quedan ${left3}, para saber cuantos se usaron hacemos ${total3} - ${left3}.`, type: 'tf', options: tfOptions(), correct: 0, xp: 50 },
+                createNumericQuestion(en ? `A ship had ${total4} plasma charges and lost ${lost4}. How many charges does it keep?` : `Una nave tenia ${total4} cargas de plasma y perdio ${lost4}. Cuantas cargas conserva?`, total4 - lost4, 50),
+                createNumericQuestion(en ? `The lab had ${total2} pieces and sent ${spent1} for repair. How many pieces remain?` : `El laboratorio tenia ${total2} piezas y envio ${spent1} a reparacion. Cuantas piezas quedan?`, total2 - spent1, 50)
             ];
         }
 
         function generateMultiplicationQuestions() {
+            const en = getLang() === 'en';
             const groups1 = randomInt(4, 9);
             const each1 = randomInt(5, 12);
             const rows = randomInt(3, 8);
@@ -1355,15 +1661,16 @@
             const pilots = randomInt(5, 8);
 
             return [
-                createNumericQuestion(`Hay ${groups1} cajas con ${each1} sensores en cada una. Cuantos sensores hay en total?`, groups1 * each1, 75),
-                createNumericQuestion(`La sala de mando tiene ${rows} filas con ${seats} asientos cada una. Cuantos asientos hay?`, rows * seats, 75),
-                { text: `Sumar ${each1} un total de ${groups1} veces es lo mismo que multiplicar ${groups1} x ${each1}.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
-                createNumericQuestion(`Cada modulo trae ${each2} chips. Si hay ${groups2} modulos, cuantos chips hay?`, groups2 * each2, 75),
-                createNumericQuestion(`En la flota hay ${teams} escuadrones con ${pilots} pilotos cada uno. Cuantos pilotos participan?`, teams * pilots, 75)
+                createNumericQuestion(en ? `There are ${groups1} boxes with ${each1} sensors in each one. How many sensors are there in total?` : `Hay ${groups1} cajas con ${each1} sensores en cada una. Cuantos sensores hay en total?`, groups1 * each1, 75),
+                createNumericQuestion(en ? `The command room has ${rows} rows with ${seats} seats in each row. How many seats are there?` : `La sala de mando tiene ${rows} filas con ${seats} asientos cada una. Cuantos asientos hay?`, rows * seats, 75),
+                { text: en ? `Adding ${each1} a total of ${groups1} times is the same as multiplying ${groups1} x ${each1}.` : `Sumar ${each1} un total de ${groups1} veces es lo mismo que multiplicar ${groups1} x ${each1}.`, type: 'tf', options: tfOptions(), correct: 0, xp: 50 },
+                createNumericQuestion(en ? `Each module has ${each2} chips. If there are ${groups2} modules, how many chips are there?` : `Cada modulo trae ${each2} chips. Si hay ${groups2} modulos, cuantos chips hay?`, groups2 * each2, 75),
+                createNumericQuestion(en ? `In the fleet there are ${teams} squadrons with ${pilots} pilots each. How many pilots participate?` : `En la flota hay ${teams} escuadrones con ${pilots} pilotos cada uno. Cuantos pilotos participan?`, teams * pilots, 75)
             ];
         }
 
         function generateDivisionQuestions() {
+            const en = getLang() === 'en';
             const divisor1 = randomInt(4, 9);
             const quotient1 = randomInt(5, 10);
             const divisor2 = randomInt(5, 9);
@@ -1374,15 +1681,16 @@
             const quotient4 = randomInt(5, 9);
 
             return [
-                createNumericQuestion(`Hay ${divisor1 * quotient1} tarjetas de acceso para repartir en ${divisor1} grupos iguales. Cuantas recibe cada grupo?`, quotient1, 75, [-2, -1, 1, 2]),
-                createNumericQuestion(`Se reparten ${divisor2 * quotient2} herramientas entre ${divisor2} pilotos por igual. Cuantas recibe cada piloto?`, quotient2, 75, [-2, -1, 1, 3]),
-                { text: `Si repartimos ${divisor3 * quotient3} objetos entre ${divisor3} equipos iguales, cada equipo recibe ${quotient3}.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
-                createNumericQuestion(`El comando guardo ${divisor4 * quotient4} baterias en ${divisor4} cajas iguales. Cuantas baterias van en cada caja?`, quotient4, 75, [-2, -1, 1, 2]),
-                createNumericQuestion(`Hay ${divisor1 * quotient2} insignias para ${divisor1} pilotos. Si todos reciben igual, cuantas insignias obtiene cada piloto?`, quotient2, 75, [-2, -1, 1, 2])
+                createNumericQuestion(en ? `There are ${divisor1 * quotient1} access cards to share among ${divisor1} equal groups. How many does each group receive?` : `Hay ${divisor1 * quotient1} tarjetas de acceso para repartir en ${divisor1} grupos iguales. Cuantas recibe cada grupo?`, quotient1, 75, [-2, -1, 1, 2]),
+                createNumericQuestion(en ? `${divisor2 * quotient2} tools are shared equally among ${divisor2} pilots. How many does each pilot receive?` : `Se reparten ${divisor2 * quotient2} herramientas entre ${divisor2} pilotos por igual. Cuantas recibe cada piloto?`, quotient2, 75, [-2, -1, 1, 3]),
+                { text: en ? `If we share ${divisor3 * quotient3} objects among ${divisor3} equal teams, each team receives ${quotient3}.` : `Si repartimos ${divisor3 * quotient3} objetos entre ${divisor3} equipos iguales, cada equipo recibe ${quotient3}.`, type: 'tf', options: tfOptions(), correct: 0, xp: 50 },
+                createNumericQuestion(en ? `Command stored ${divisor4 * quotient4} batteries in ${divisor4} equal boxes. How many batteries go in each box?` : `El comando guardo ${divisor4 * quotient4} baterias en ${divisor4} cajas iguales. Cuantas baterias van en cada caja?`, quotient4, 75, [-2, -1, 1, 2]),
+                createNumericQuestion(en ? `There are ${divisor1 * quotient2} badges for ${divisor1} pilots. If everyone receives the same amount, how many badges does each pilot get?` : `Hay ${divisor1 * quotient2} insignias para ${divisor1} pilotos. Si todos reciben igual, cuantas insignias obtiene cada piloto?`, quotient2, 75, [-2, -1, 1, 2])
             ];
         }
 
         function generateFractionQuestions() {
+            const en = getLang() === 'en';
             const denom1 = [6, 8, 10, 12][randomInt(0, 3)];
             const numer1 = randomInt(2, denom1 - 2);
             const denom2 = [4, 5, 6, 8][randomInt(0, 3)];
@@ -1390,15 +1698,16 @@
             const greaterDenom = [6, 8, 10, 12][randomInt(0, 3)];
 
             return [
-                createChoiceQuestion(`Un panel se divide en ${denom1} partes iguales y se iluminan ${numer1}. Que fraccion se ilumino?`, `${numer1}/${denom1}`, [`${denom1}/${numer1}`, `${denom1 - numer1}/${denom1}`, `${numer1}/${denom1 - 1}`], 75),
-                createChoiceQuestion('Cual fraccion representa tres cuartos?', '3/4', ['1/4', '1/2', '4/3'], 75),
-                { text: `Si una barra se divide en ${denom2} partes iguales y se toman ${numer2}, el denominador es ${denom2}.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
-                createChoiceQuestion(`Cual fraccion es mayor si todas tienen denominador ${greaterDenom}?`, `${greaterDenom - 1}/${greaterDenom}`, [`1/${greaterDenom}`, `2/${greaterDenom}`, `${Math.floor(greaterDenom / 2)}/${greaterDenom}`], 75),
-                { text: `La fraccion ${denom1 / 2}/${denom1} representa la misma cantidad que 1/2.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 75 }
+                createChoiceQuestion(en ? `A panel is divided into ${denom1} equal parts and ${numer1} are lit. What fraction is lit?` : `Un panel se divide en ${denom1} partes iguales y se iluminan ${numer1}. Que fraccion se ilumino?`, `${numer1}/${denom1}`, [`${denom1}/${numer1}`, `${denom1 - numer1}/${denom1}`, `${numer1}/${denom1 - 1}`], 75),
+                createChoiceQuestion(en ? 'Which fraction represents three fourths?' : 'Cual fraccion representa tres cuartos?', '3/4', ['1/4', '1/2', '4/3'], 75),
+                { text: en ? `If a bar is divided into ${denom2} equal parts and ${numer2} are taken, the denominator is ${denom2}.` : `Si una barra se divide en ${denom2} partes iguales y se toman ${numer2}, el denominador es ${denom2}.`, type: 'tf', options: tfOptions(), correct: 0, xp: 50 },
+                createChoiceQuestion(en ? `Which fraction is greater if all have denominator ${greaterDenom}?` : `Cual fraccion es mayor si todas tienen denominador ${greaterDenom}?`, `${greaterDenom - 1}/${greaterDenom}`, [`1/${greaterDenom}`, `2/${greaterDenom}`, `${Math.floor(greaterDenom / 2)}/${greaterDenom}`], 75),
+                { text: en ? `The fraction ${denom1 / 2}/${denom1} represents the same amount as 1/2.` : `La fraccion ${denom1 / 2}/${denom1} representa la misma cantidad que 1/2.`, type: 'tf', options: tfOptions(), correct: 0, xp: 75 }
             ];
         }
 
         function generateSequenceQuestions() {
+            const en = getLang() === 'en';
             const start1 = randomInt(2, 9);
             const step1 = randomInt(3, 9);
             const start2 = randomInt(40, 90);
@@ -1407,15 +1716,16 @@
             const start3 = randomInt(2, 5);
 
             return [
-                createNumericQuestion(`Completa la secuencia: ${start1}, ${start1 + step1}, ${start1 + step1 * 2}, ${start1 + step1 * 3}, __`, start1 + step1 * 4, 75),
-                createNumericQuestion(`Completa la secuencia: ${start2}, ${start2 - step2}, ${start2 - step2 * 2}, ${start2 - step2 * 3}, __`, start2 - step2 * 4, 100),
-                { text: `En la secuencia ${step1}, ${step1 * 2}, ${step1 * 3}, ${step1 * 4}, el patron es sumar ${step1} cada vez.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
-                createNumericQuestion(`Completa la secuencia: ${start3}, ${start3 * multiplier}, ${start3 * multiplier ** 2}, ${start3 * multiplier ** 3}, __`, start3 * multiplier ** 4, 75),
-                createNumericQuestion('Completa la secuencia: 2, 5, 9, 14, __', 20, 100, [-3, -1, 2, 4])
+                createNumericQuestion(en ? `Complete the sequence: ${start1}, ${start1 + step1}, ${start1 + step1 * 2}, ${start1 + step1 * 3}, __` : `Completa la secuencia: ${start1}, ${start1 + step1}, ${start1 + step1 * 2}, ${start1 + step1 * 3}, __`, start1 + step1 * 4, 75),
+                createNumericQuestion(en ? `Complete the sequence: ${start2}, ${start2 - step2}, ${start2 - step2 * 2}, ${start2 - step2 * 3}, __` : `Completa la secuencia: ${start2}, ${start2 - step2}, ${start2 - step2 * 2}, ${start2 - step2 * 3}, __`, start2 - step2 * 4, 100),
+                { text: en ? `In the sequence ${step1}, ${step1 * 2}, ${step1 * 3}, ${step1 * 4}, the pattern is adding ${step1} each time.` : `En la secuencia ${step1}, ${step1 * 2}, ${step1 * 3}, ${step1 * 4}, el patron es sumar ${step1} cada vez.`, type: 'tf', options: tfOptions(), correct: 0, xp: 50 },
+                createNumericQuestion(en ? `Complete the sequence: ${start3}, ${start3 * multiplier}, ${start3 * multiplier ** 2}, ${start3 * multiplier ** 3}, __` : `Completa la secuencia: ${start3}, ${start3 * multiplier}, ${start3 * multiplier ** 2}, ${start3 * multiplier ** 3}, __`, start3 * multiplier ** 4, 75),
+                createNumericQuestion(en ? 'Complete the sequence: 2, 5, 9, 14, __' : 'Completa la secuencia: 2, 5, 9, 14, __', 20, 100, [-3, -1, 2, 4])
             ];
         }
 
         function generateMeasurementQuestions() {
+            const en = getLang() === 'en';
             const meters = randomInt(2, 7);
             const hours = randomInt(2, 4);
             const kilos = randomInt(1, 5);
@@ -1438,15 +1748,16 @@
                 .filter(time => time !== answerTime);
 
             return [
-                createChoiceQuestion(`Si una antena mide ${meters} metros, cuantos centimetros mide?`, `${centimeters} cm`, [`${centimeters + 10} cm`, `${centimeters - 10} cm`, `${centimeters + 100} cm`], 75),
-                createNumericQuestion(`Cuantos minutos hay en ${hours} horas?`, hours * 60, 100, [-10, -5, 5, 10]),
-                { text: 'Los centimetros pueden usarse para medir longitudes pequenas.', type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
-                createChoiceQuestion(`Cuantos gramos hay en ${kilos} kilogramos?`, `${grams} g`, [`${grams + 100} g`, `${grams - 100} g`, `${grams + 1000} g`], 75),
-                createChoiceQuestion(`Una practica empieza a las 4:${startMinute.toString().padStart(2, '0')} p.m. y dura ${duration} minutos. A que hora termina?`, answerTime, wrongTimes, 100)
+                createChoiceQuestion(en ? `If an antenna measures ${meters} meters, how many centimeters is that?` : `Si una antena mide ${meters} metros, cuantos centimetros mide?`, `${centimeters} cm`, [`${centimeters + 10} cm`, `${centimeters - 10} cm`, `${centimeters + 100} cm`], 75),
+                createNumericQuestion(en ? `How many minutes are in ${hours} hours?` : `Cuantos minutos hay en ${hours} horas?`, hours * 60, 100, [-10, -5, 5, 10]),
+                { text: en ? 'Centimeters can be used to measure small lengths.' : 'Los centimetros pueden usarse para medir longitudes pequenas.', type: 'tf', options: tfOptions(), correct: 0, xp: 50 },
+                createChoiceQuestion(en ? `How many grams are in ${kilos} kilograms?` : `Cuantos gramos hay en ${kilos} kilogramos?`, `${grams} g`, [`${grams + 100} g`, `${grams - 100} g`, `${grams + 1000} g`], 75),
+                createChoiceQuestion(en ? `A practice starts at 4:${startMinute.toString().padStart(2, '0')} p.m. and lasts ${duration} minutes. What time does it end?` : `Una practica empieza a las 4:${startMinute.toString().padStart(2, '0')} p.m. y dura ${duration} minutos. A que hora termina?`, answerTime, wrongTimes, 100)
             ];
         }
 
         function generateProbabilityQuestions() {
+            const en = getLang() === 'en';
             const red = randomInt(4, 9);
             const green = randomInt(1, red - 1);
             const totalColors = randomInt(3, 6);
@@ -1454,11 +1765,11 @@
             const blue = yellow;
 
             return [
-                createChoiceQuestion(`En una bolsa hay ${red} fichas rojas y ${green} verdes. Que color es mas probable sacar?`, 'Rojo', ['Verde', 'Los dos igual', 'Ninguno'], 100),
-                createChoiceQuestion('En un dado normal, cual es la probabilidad de sacar un numero mayor que 4?', '2 de 6', ['1 de 6', '3 de 6', '4 de 6'], 100),
-                { text: `Si una bolsa solo tiene fichas moradas, sacar una ficha amarilla es imposible.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 },
-                createChoiceQuestion(`Una ruleta tiene ${totalColors} colores iguales. Cual es la probabilidad de caer en un color especifico?`, `1 de ${totalColors}`, [`2 de ${totalColors}`, `${totalColors - 1} de ${totalColors}`, `${totalColors} de ${totalColors}`], 100),
-                { text: `Una bolsa tiene ${yellow} fichas amarillas y ${blue} fichas azules. Sacar amarillo y sacar azul tienen la misma probabilidad.`, type: 'tf', options: ['Verdadero', 'Falso'], correct: 0, xp: 50 }
+                createChoiceQuestion(en ? `A bag has ${red} red tokens and ${green} green tokens. Which color is more likely to be drawn?` : `En una bolsa hay ${red} fichas rojas y ${green} verdes. Que color es mas probable sacar?`, en ? 'Red' : 'Rojo', en ? ['Green', 'Both equally', 'None'] : ['Verde', 'Los dos igual', 'Ninguno'], 100),
+                createChoiceQuestion(en ? 'On a normal die, what is the probability of rolling a number greater than 4?' : 'En un dado normal, cual es la probabilidad de sacar un numero mayor que 4?', en ? '2 out of 6' : '2 de 6', en ? ['1 out of 6', '3 out of 6', '4 out of 6'] : ['1 de 6', '3 de 6', '4 de 6'], 100),
+                { text: en ? 'If a bag only has purple tokens, drawing a yellow token is impossible.' : `Si una bolsa solo tiene fichas moradas, sacar una ficha amarilla es imposible.`, type: 'tf', options: tfOptions(), correct: 0, xp: 50 },
+                createChoiceQuestion(en ? `A spinner has ${totalColors} equal colors. What is the probability of landing on one specific color?` : `Una ruleta tiene ${totalColors} colores iguales. Cual es la probabilidad de caer en un color especifico?`, en ? `1 out of ${totalColors}` : `1 de ${totalColors}`, en ? [`2 out of ${totalColors}`, `${totalColors - 1} out of ${totalColors}`, `${totalColors} out of ${totalColors}`] : [`2 de ${totalColors}`, `${totalColors - 1} de ${totalColors}`, `${totalColors} de ${totalColors}`], 100),
+                { text: en ? `A bag has ${yellow} yellow tokens and ${blue} blue tokens. Drawing yellow and drawing blue have the same probability.` : `Una bolsa tiene ${yellow} fichas amarillas y ${blue} fichas azules. Sacar amarillo y sacar azul tienen la misma probabilidad.`, type: 'tf', options: tfOptions(), correct: 0, xp: 50 }
             ];
         }
 
@@ -1475,6 +1786,13 @@
             };
 
             if (generators[mission.id]) return generators[mission.id]();
+            if (mission.id === 'm9') {
+                return [
+                    { text: getLang() === 'en' ? 'Match the 6 times table with its results.' : 'Empareja la tabla del 6 con sus resultados.', type: 'matching', table: 6, xp: 150 },
+                    { text: getLang() === 'en' ? 'Match the 7 times table with its results.' : 'Empareja la tabla del 7 con sus resultados.', type: 'matching', table: 7, xp: 150 },
+                    { text: getLang() === 'en' ? 'Match the 8 times table with its results.' : 'Empareja la tabla del 8 con sus resultados.', type: 'matching', table: 8, xp: 150 }
+                ];
+            }
             return mission.questions.map(question => ({ ...question }));
         }
 
@@ -1488,15 +1806,15 @@
             appState.currentMissionQuestions = generateMissionRunQuestions(mission);
             appState.missionDuration = mission.noTimeLimit ? 0 : appState.currentMissionQuestions.length * MISSION_SECONDS_PER_QUESTION;
             appState.missionTimer = appState.missionDuration;
-            document.getElementById('active-mission-topic').textContent = mission.topic;
-            document.getElementById('active-mission-title').textContent = mission.title;
+            document.getElementById('active-mission-topic').textContent = getMissionText(mission, 'topic');
+            document.getElementById('active-mission-title').textContent = getMissionText(mission, 'title');
             document.getElementById('instance-id').textContent = `INST-${Math.floor(Math.random() * 9000) + 1000}-${id.toUpperCase()}`;
 
             showScreen('mission-screen');
             playSynthSound('hover');
             if (mission.noTimeLimit) {
                 clearInterval(appState.timerInterval);
-                document.getElementById('mission-timer').textContent = 'SIN LIMITE';
+                document.getElementById('mission-timer').textContent = tr('noLimit');
                 document.getElementById('mission-timer').classList.remove('text-neonRed');
             } else {
                 startTimer();
@@ -1584,11 +1902,11 @@
             optionsContainer.className = 'grid grid-cols-1 md:grid-cols-2 gap-5 mt-4';
             optionsContainer.innerHTML = `
                 <div>
-                    <p class="text-xs font-cyber text-neonCyan mb-3 tracking-wider">MULTIPLICACIONES</p>
+                    <p class="text-xs font-cyber text-neonCyan mb-3 tracking-wider">${tr('matchingLeft')}</p>
                     <div id="matching-left" class="grid grid-cols-1 gap-2"></div>
                 </div>
                 <div>
-                    <p class="text-xs font-cyber text-neonPurple mb-3 tracking-wider">RESULTADOS</p>
+                    <p class="text-xs font-cyber text-neonPurple mb-3 tracking-wider">${tr('matchingRight')}</p>
                     <div id="matching-right" class="grid grid-cols-2 gap-2"></div>
                 </div>
             `;
@@ -1631,7 +1949,7 @@
                         button.disabled = true;
                         selectedFactor = null;
                         matchedCount++;
-                        feedback.innerHTML = `<span class="text-neonGreen"><i class="fas fa-link"></i> PAREJA CORRECTA ${matchedCount}/10</span>`;
+                        feedback.innerHTML = `<span class="text-neonGreen"><i class="fas fa-link"></i> ${tr('pairCorrect')} ${matchedCount}/10</span>`;
                         feedback.style.opacity = '1';
                         playSynthSound('success');
 
@@ -1640,7 +1958,7 @@
                         }
                     } else {
                         button.classList.add('flash-red', 'border-neonRed', 'bg-neonRed/20');
-                        feedback.innerHTML = '<span class="text-neonRed"><i class="fas fa-times-circle"></i> INTENTA OTRA PAREJA</span>';
+                        feedback.innerHTML = `<span class="text-neonRed"><i class="fas fa-times-circle"></i> ${tr('tryAnother')}</span>`;
                         feedback.style.opacity = '1';
                         playSynthSound('error');
                         setTimeout(() => {
@@ -1659,14 +1977,14 @@
                 missionTitle: mission.title,
                 questionIndex: appState.currentQuestionIdx,
                 questionText: question.text,
-                selectedOption: `Tabla del ${question.table} emparejada`,
-                correctOption: `Resultados del ${question.table}x1 al ${question.table}x10`,
+                selectedOption: getLang() === 'en' ? `Table ${question.table} matched` : `Tabla del ${question.table} emparejada`,
+                correctOption: getLang() === 'en' ? `Results from ${question.table}x1 to ${question.table}x10` : `Resultados del ${question.table}x1 al ${question.table}x10`,
                 isCorrect: true,
                 answeredAt: new Date().toISOString()
             });
 
             const feedback = document.getElementById('question-feedback');
-            feedback.innerHTML = '<span class="text-neonGreen"><i class="fas fa-check-circle"></i> TABLA COMPLETA</span>';
+            feedback.innerHTML = `<span class="text-neonGreen"><i class="fas fa-check-circle"></i> ${tr('tableComplete')}</span>`;
             feedback.style.opacity = '1';
 
             setTimeout(() => {
@@ -1705,12 +2023,12 @@
             if (selectedIdx === question.correct) {
                 appState.missionScore += question.xp;
                 btnElement.classList.add('border-neonGreen', 'bg-neonGreen/20', 'flash-green');
-                feedback.innerHTML = '<span class="text-neonGreen"><i class="fas fa-check-circle"></i> RESPUESTA CORRECTA</span>';
+                feedback.innerHTML = `<span class="text-neonGreen"><i class="fas fa-check-circle"></i> ${tr('correct')}</span>`;
                 playSynthSound('success');
             } else {
                 btnElement.classList.add('border-neonRed', 'bg-neonRed/20', 'flash-red');
                 allButtons[question.correct].classList.add('border-neonGreen', 'bg-neonGreen/20');
-                feedback.innerHTML = '<span class="text-neonRed"><i class="fas fa-times-circle"></i> REVISA EL CALCULO</span>';
+                feedback.innerHTML = `<span class="text-neonRed"><i class="fas fa-times-circle"></i> ${tr('incorrect')}</span>`;
                 playSynthSound('error');
             }
 
@@ -1732,7 +2050,7 @@
             const runQuestions = appState.currentMissionQuestions.length ? appState.currentMissionQuestions : mission?.questions;
             const question = runQuestions?.[appState.currentQuestionIdx];
             const feedback = document.getElementById('question-feedback');
-            feedback.innerHTML = '<span class="text-neonRed"><i class="fas fa-hourglass-end"></i> TIEMPO AGOTADO</span>';
+            feedback.innerHTML = `<span class="text-neonRed"><i class="fas fa-hourglass-end"></i> ${tr('timeout')}</span>`;
             feedback.style.opacity = '1';
             playSynthSound('error');
 
@@ -1742,7 +2060,7 @@
                     missionTitle: mission.title,
                     questionIndex: appState.currentQuestionIdx,
                     questionText: question.text,
-                    selectedOption: 'Sin respuesta',
+                    selectedOption: getLang() === 'en' ? 'No answer' : 'Sin respuesta',
                     correctOption: question.options[question.correct],
                     isCorrect: false,
                     answeredAt: new Date().toISOString()
@@ -1758,8 +2076,8 @@
 
         function abortMission() {
             showCustomModal(
-                "ABORTAR MISION",
-                "Estas seguro de que deseas cancelar el reto actual? Se perdera el progreso no guardado.",
+                getLang() === 'en' ? "ABORT MISSION" : "ABORTAR MISION",
+                getLang() === 'en' ? "Are you sure you want to cancel the current challenge? Unsaved progress will be lost." : "Estas seguro de que deseas cancelar el reto actual? Se perdera el progreso no guardado.",
                 () => {
                     clearInterval(appState.timerInterval);
                     hideCustomModal();
@@ -1785,8 +2103,8 @@
             saveState();
 
             showCustomModal(
-                "MISION COMPLETADA",
-                `Reto finalizado. XP obtenida en este intento: ${appState.missionScore}.`,
+                getLang() === 'en' ? "MISSION COMPLETE" : "MISION COMPLETADA",
+                getLang() === 'en' ? `Challenge finished. XP earned in this attempt: ${appState.missionScore}.` : `Reto finalizado. XP obtenida en este intento: ${appState.missionScore}.`,
                 () => {
                     hideCustomModal();
                     updateGlobalHUD();
@@ -1819,6 +2137,16 @@
         function getAnimalMotivationalMessage(animal, percent) {
             const selectedAnimal = animal || 'Explorador';
             const scoreBand = getScoreBand(percent);
+            if (getLang() === 'en') {
+                const animalName = getAnimalLabel(selectedAnimal);
+                const messages = {
+                    practice: `The spirit of the ${animalName} is still training. Take a breath, try again, and your math power will grow.`,
+                    acceptable: `Your ${animalName} spirit is awake. You made progress; keep practicing and your answers will become stronger.`,
+                    strong: `Like a focused ${animalName}, you found many correct paths and solved challenges with strategy.`,
+                    excellent: `Champion ${animalName} energy: your concentration and math reasoning shined through the mission.`
+                };
+                return messages[scoreBand];
+            }
             const messages = {
                 Leon: {
                     practice: 'Como un leon joven, hoy estas aprendiendo a sacar fuerza cuando el reto se pone dificil. Respira, vuelve a intentarlo y tu rugido matematico crecera.',
@@ -1883,10 +2211,14 @@
             energyLabel.textContent = `${percent}%`;
 
             if (percent === 100) {
-                statusMessage.innerHTML = `<span class="text-neonGreen font-bold">${teamName} logro energia completa.</span> Pulso EMP lanzado: las naves extraterrestres pierden sus sistemas y se retiran. Amenaza alien derrotada.`;
+                statusMessage.innerHTML = getLang() === 'en'
+                    ? `<span class="text-neonGreen font-bold">${teamName} reached full energy.</span> EMP pulse launched: the alien ships lose their systems and retreat. Alien threat defeated.`
+                    : `<span class="text-neonGreen font-bold">${teamName} logro energia completa.</span> Pulso EMP lanzado: las naves extraterrestres pierden sus sistemas y se retiran. Amenaza alien derrotada.`;
             } else {
                 const missing = 100 - percent;
-                statusMessage.innerHTML = `<span class="text-yellow-300 font-bold">${teamName} cargo el canon al ${percent}%.</span> Faltan ${missing}% de energia: repite misiones y busca respuestas perfectas para lanzar el pulso EMP final.`;
+                statusMessage.innerHTML = getLang() === 'en'
+                    ? `<span class="text-yellow-300 font-bold">${teamName} charged the cannon to ${percent}%.</span> ${missing}% energy is missing: repeat missions and aim for perfect answers to launch the final EMP pulse.`
+                    : `<span class="text-yellow-300 font-bold">${teamName} cargo el canon al ${percent}%.</span> Faltan ${missing}% de energia: repite misiones y busca respuestas perfectas para lanzar el pulso EMP final.`;
             }
         }
 
@@ -1919,19 +2251,19 @@
 
             const classEl = document.getElementById('final-classification');
             if (percent < 60) {
-                classEl.textContent = "EN PRACTICA";
+                classEl.textContent = tr('classifications')[0];
                 classEl.className = "font-cyber text-2xl tracking-widest text-red-500";
                 circle.style.stroke = "#ff2a2a";
             } else if (percent < 70) {
-                classEl.textContent = "ACEPTABLE";
+                classEl.textContent = tr('classifications')[1];
                 classEl.className = "font-cyber text-2xl tracking-widest text-yellow-500";
                 circle.style.stroke = "#ffcc00";
             } else if (percent < 90) {
-                classEl.textContent = "SOBRESALIENTE";
+                classEl.textContent = tr('classifications')[2];
                 classEl.className = "font-cyber text-2xl tracking-widest text-neonCyan";
                 circle.style.stroke = "#00e5ff";
             } else {
-                classEl.textContent = "EXCELENTE";
+                classEl.textContent = tr('classifications')[3];
                 classEl.className = "font-cyber text-2xl tracking-widest text-neonGreen font-bold";
                 circle.style.stroke = "#00ff66";
             }
@@ -2076,8 +2408,8 @@
 
         function confirmReset() {
             showCustomModal(
-                "ADVERTENCIA CRITICA",
-                "Confirmas el borrado de la base de datos local? Esto eliminara todo tu progreso, XP y reportes actuales.",
+                getLang() === 'en' ? "CRITICAL WARNING" : "ADVERTENCIA CRITICA",
+                getLang() === 'en' ? "Do you confirm deleting the local database? This will remove all progress, XP, and current reports." : "Confirmas el borrado de la base de datos local? Esto eliminara todo tu progreso, XP y reportes actuales.",
                 executeReset,
                 true
             );
@@ -2090,8 +2422,8 @@
 
         function confirmProgressReset() {
             showCustomModal(
-                "REINICIAR PROGRESO",
-                "Esto pondra el XP en 0, bloqueara nuevamente las misiones pendientes, borrara tiempos y eliminara el historial de respuestas. Tus datos de operador se conservaran.",
+                getLang() === 'en' ? "RESET PROGRESS" : "REINICIAR PROGRESO",
+                getLang() === 'en' ? "This will set XP to 0, erase times, and delete the answer history. Your scientist data will be kept." : "Esto pondra el XP en 0, borrara tiempos y eliminara el historial de respuestas. Tus datos de cientifico se conservaran.",
                 executeProgressReset,
                 true
             );
@@ -2126,14 +2458,14 @@
             if (showCancel) {
                 const btnCancel = document.createElement('button');
                 btnCancel.className = 'cyber-btn px-4 py-2 border-gray-500 text-gray-400 hover:text-white hover:bg-gray-800 text-xs rounded';
-                btnCancel.textContent = 'CANCELAR';
+                btnCancel.textContent = tr('cancel');
                 btnCancel.onclick = hideCustomModal;
                 btnContainer.appendChild(btnCancel);
             }
 
             const btnConfirm = document.createElement('button');
             btnConfirm.className = 'cyber-btn px-4 py-2 border-neonRed text-neonRed hover:bg-neonRed hover:text-white text-xs rounded';
-            btnConfirm.textContent = showCancel ? 'CONFIRMAR' : 'ENTENDIDO';
+            btnConfirm.textContent = showCancel ? tr('confirm') : tr('understood');
             btnConfirm.onclick = onConfirm;
             btnContainer.appendChild(btnConfirm);
 
