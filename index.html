@@ -379,7 +379,7 @@
                     <p class="font-cyber text-xs tracking-widest text-gray-700 mb-2">TRANSMISION DEL COMANDO ESPACIAL</p>
                     <h1 id="intro-greeting" class="font-cyber text-2xl md:text-4xl leading-tight text-black">Genio, te estabamos esperando.</h1>
                     <p id="intro-copy" class="mt-4 text-lg md:text-xl font-bold leading-relaxed text-gray-900">
-                        Un comando de naves extraterrestres se acerca a la Tierra. Solo un genio matematico puede descifrar los retos y cargar el canon de pulso electromagnetico.
+                        Un comando de naves extraterrestres se acerca a la Tierra. Solo un genio matematico puede descifrar los retos y cargar el cañon de pulso electromagnetico.
                     </p>
                 </div>
 
@@ -391,7 +391,7 @@
                         </div>
                         <h2 id="intro-team" class="font-cyber text-3xl text-white mb-3">TEAM ANIMAL</h2>
                         <p class="text-gray-300 leading-relaxed">
-                            Tus respuestas correctas llenaran la energia del canon EMP. Solo con el 100% de energia el pulso podra lanzarse y la amenaza alien sera derrotada.
+                            Tus respuestas correctas llenaran la energia del cañon EMP. Solo con el 100% de energia el pulso podra lanzarse y la amenaza alien sera derrotada.
                         </p>
                     </div>
                     <div class="mt-6">
@@ -441,7 +441,7 @@
 
         <div class="text-center mb-6">
             <h2 class="font-cyber text-2xl text-white tracking-widest"><i class="fas fa-satellite"></i> PANEL DE DEFENSA MATEMATICA</h2>
-            <p class="text-gray-400 text-sm mt-1">Descifra los retos para cargar el canon EMP y proteger la Tierra de la amenaza alien.</p>
+            <p class="text-gray-400 text-sm mt-1">Descifra los retos para cargar el cañon EMP y proteger la Tierra de la amenaza alien.</p>
         </div>
 
         <div id="missions-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto w-full"></div>
@@ -491,7 +491,7 @@
             <i class="fas fa-award absolute -right-10 -top-10 text-[15rem] text-white opacity-5"></i>
 
             <h1 class="font-cyber text-4xl mb-2 text-neonCyan">ENERGIA EMP CALCULADA</h1>
-            <p class="text-gray-400 mb-8">El porcentaje de respuestas correctas carga el canon de pulso electromagnetico</p>
+            <p class="text-gray-400 mb-8">El porcentaje de respuestas correctas carga el cañon de pulso electromagnetico</p>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 relative z-10">
                 <div class="flex flex-col items-center justify-center bg-darkBg p-6 rounded-lg border border-gray-800">
@@ -525,14 +525,14 @@
 
             <div class="relative z-10 mb-8 bg-darkBg p-4 rounded-lg border border-neonCyan/60 text-left">
                 <div class="flex justify-between items-center gap-3 mb-2">
-                    <p class="text-xs text-neonCyan font-cyber tracking-wider">CANON DE PULSO ELECTROMAGNETICO</p>
+                    <p class="text-xs text-neonCyan font-cyber tracking-wider">CAÑON DE PULSO ELECTROMAGNETICO</p>
                     <span id="emp-energy-label" class="font-cyber text-neonGreen">0%</span>
                 </div>
                 <div class="holo-bar h-4 mb-3">
                     <div id="emp-energy-fill" class="emp-fill" style="width: 0%;"></div>
                 </div>
                 <p id="emp-status-message" class="text-sm md:text-base text-gray-200 leading-relaxed">
-                    Calculando energia del canon...
+                    Calculando energia del cañon...
                 </p>
             </div>
 
@@ -1082,7 +1082,7 @@
             if (!appState.user) return;
             document.getElementById('intro-greeting').textContent = `Genio ${appState.user.name}, el comando espacial te estaba esperando.`;
             document.getElementById('intro-team').textContent = getPilotTeamName(appState.user.animal);
-            document.getElementById('intro-copy').textContent = `${getPilotTeamName(appState.user.animal)} queda bajo tu mando. Las naves alien preparan un ataque con pulso electromagnetico, pero tus retos matematicos pueden cargar nuestro canon EMP defensivo.`;
+            document.getElementById('intro-copy').textContent = `${getPilotTeamName(appState.user.animal)} queda bajo tu mando. Las naves alien preparan un ataque con pulso electromagnetico, pero tus retos matematicos pueden cargar nuestro cañon EMP defensivo.`;
             showScreen('intro-screen');
         }
 
@@ -1881,7 +1881,7 @@
                 statusMessage.innerHTML = `<span class="text-neonGreen font-bold">${teamName} logro energia completa.</span> Pulso EMP lanzado: las naves extraterrestres pierden sus sistemas y se retiran. Amenaza alien derrotada.`;
             } else {
                 const missing = 100 - percent;
-                statusMessage.innerHTML = `<span class="text-yellow-300 font-bold">${teamName} cargo el canon al ${percent}%.</span> Faltan ${missing}% de energia: repite misiones y busca respuestas perfectas para lanzar el pulso EMP final.`;
+                statusMessage.innerHTML = `<span class="text-yellow-300 font-bold">${teamName} cargo el cañon al ${percent}%.</span> Faltan ${missing}% de energia: repite misiones y busca respuestas perfectas para lanzar el pulso EMP final.`;
             }
         }
 
@@ -2045,7 +2045,7 @@
             else if (percent < 70) observation = "Buen avance. Puedes mejorar repasando fracciones, medicion y patrones.";
             else if (percent < 90) observation = "Muy buen desempeno. Demuestras comprension solida de los retos matematicos.";
             else if (percent < 100) observation = "Excelente resultado. Tu razonamiento matematico esta muy bien entrenado.";
-            else observation = "Energia completa. El canon EMP fue lanzado y la amenaza alien fue derrotada.";
+            else observation = "Energia completa. El cañon EMP fue lanzado y la amenaza alien fue derrotada.";
 
             doc.text(observation, 25, missionY + 10, { maxWidth: 160 });
 
